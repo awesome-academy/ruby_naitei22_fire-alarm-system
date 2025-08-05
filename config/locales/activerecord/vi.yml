@@ -1,0 +1,15 @@
+vi:
+  activerecord:
+    models:
+      user: "Người dùng"
+      invitation: "Mã mời" 
+    attributes:
+      invitation:
+        code: "Mã"
+        purpose: "Mục đích"
+        used: "Đã sử dụng"
+      user:
+        admin:
+          must_exist_for_supervisor: "phải tồn tại cho một giám sát viên"
+        admin_id:
+          cannot_be_set_for_admin: "không thể đặt cho người dùng quản trị"

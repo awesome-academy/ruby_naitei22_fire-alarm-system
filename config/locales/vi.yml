@@ -1,0 +1,17 @@
+vi:
+  errors:
+    messages:
+      not_saved:
+        one: "1 lỗi đã ngăn không cho %{model} này được lưu"
+        other: "%{count} lỗi đã ngăn không cho %{model} này được lưu"
+  activerecord:
+    errors:
+      messages:
+        blank: "không được để trống"
+        taken: "đã tồn tại"
+        inclusion: "không nằm trong danh sách cho phép"
+  api:
+    v1:
+      invitations:
+        create:
+          success: "Tạo mã mời thành công."
