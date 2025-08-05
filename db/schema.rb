@@ -10,5 +10,136 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 0) do
+ActiveRecord::Schema[7.0].define(version: 2025_08_05_073409) do
+  create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "alerts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.text "message"
+    t.string "origin", default: "SENSOR_THRESHOLD"
+    t.bigint "sensor_id"
+    t.bigint "zone_id"
+    t.bigint "camera_id"
+    t.string "image_url"
+    t.string "status", default: "PENDING"
+    t.boolean "via_email", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["camera_id"], name: "index_alerts_on_camera_id"
+    t.index ["sensor_id"], name: "index_alerts_on_sensor_id"
+    t.index ["zone_id"], name: "index_alerts_on_zone_id"
+  end
+
+  create_table "cameras", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name"
+    t.string "url"
+    t.bigint "zone_id", null: false
+    t.float "latitude"
+    t.float "longitude"
+    t.string "status", default: "ONLINE"
+    t.boolean "is_detecting", default: false
+    t.string "last_snapshot_url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["zone_id"], name: "index_cameras_on_zone_id"
+  end
+
+  create_table "sensor_logs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "sensor_id", null: false
+    t.float "temperature"
+    t.float "humidity"
+    t.datetime "detected_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["sensor_id"], name: "index_sensor_logs_on_sensor_id"
+  end
+
+  create_table "sensors", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name"
+    t.string "location"
+    t.float "threshold"
+    t.integer "sensitivity"
+    t.string "status", default: "ACTIVE"
+    t.bigint "zone_id", null: false
+    t.float "latitude"
+    t.float "longitude"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["zone_id"], name: "index_sensors_on_zone_id"
+  end
+
+  create_table "tokens", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "refresh_token", null: false
+    t.datetime "expires_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["refresh_token"], name: "index_tokens_on_refresh_token", unique: true
+    t.index ["user_id"], name: "index_tokens_on_user_id"
+  end
+
+  create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name"
+    t.string "password_digest"
+    t.string "email", null: false
+    t.string "phone"
+    t.string "address"
+    t.string "role", default: "SUPERVISOR"
+    t.bigint "admin_id"
+    t.boolean "is_active", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_id"], name: "index_users_on_admin_id"
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["phone"], name: "index_users_on_phone", unique: true
+  end
+
+  create_table "zones", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name"
+    t.bigint "user_id", null: false
+    t.text "description"
+    t.string "city"
+    t.float "latitude"
+    t.float "longitude"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_zones_on_user_id"
+  end
+
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "alerts", "cameras"
+  add_foreign_key "alerts", "sensors"
+  add_foreign_key "alerts", "zones"
+  add_foreign_key "cameras", "zones"
+  add_foreign_key "sensor_logs", "sensors"
+  add_foreign_key "sensors", "zones"
+  add_foreign_key "tokens", "users"
+  add_foreign_key "users", "users", column: "admin_id"
+  add_foreign_key "zones", "users"
 end
