@@ -15,3 +15,10 @@ vi:
       invitations:
         create:
           success: "Tạo mã mời thành công."
+  services:
+    cloudinary:
+      upload:
+        error: "Không thể tải lên Cloudinary: %{message}"
+    snapshots:
+      fake_capture:
+        no_samples_found: "Không tìm thấy ảnh mẫu trong thư mục %{dir}"

@@ -1,0 +1,26 @@
+en:
+  activerecord:
+    models:
+      camera: "Camera"
+    attributes:
+      camera:
+        name: "Name"
+        url: "RTSP URL"
+        zone_id: "Zone"
+        status: "Status"
+        is_detecting: "Detection Active"
+  
+  api:
+    v1:
+      cameras:
+        not_found: "Camera with ID %{id} not found."
+        create:
+          success: "Camera created successfully."
+        update:
+          success: "Camera updated successfully."
+        destroy:
+          success: "Camera deleted successfully."
+        stats:
+          error: "Could not fetch camera statistics."
+        capture_and_upload_snapshot:
+          success: "Snapshot captured and uploaded successfully."

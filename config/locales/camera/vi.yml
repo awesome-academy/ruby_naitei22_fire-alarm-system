@@ -1,0 +1,26 @@
+vi:
+  activerecord:
+    models:
+      camera: "Máy quay"
+    attributes:
+      camera:
+        name: "Tên"
+        url: "Đường dẫn RTSP"
+        zone_id: "Khu vực"
+        status: "Trạng thái"
+        is_detecting: "Đang dò tìm"
+
+  api:
+    v1:
+      cameras:
+        not_found: "Không tìm thấy máy quay với ID %{id}."
+        create:
+          success: "Tạo máy quay thành công."
+        update:
+          success: "Cập nhật máy quay thành công."
+        destroy:
+          success: "Xóa máy quay thành công."
+        stats:
+          error: "Không thể lấy thông số máy quay."
+        capture_and_upload_snapshot:
+          success: "Đã chụp và tải ảnh lên thành công."

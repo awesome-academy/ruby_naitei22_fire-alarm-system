@@ -15,3 +15,10 @@ en:
       invitations:
         create:
           success: "Invitation code created successfully."
+  services:
+    cloudinary:
+      upload:
+        error: "Cloudinary upload failed: %{message}"
+    snapshots:
+      fake_capture:
+        no_samples_found: "No sample images found in %{dir}"
