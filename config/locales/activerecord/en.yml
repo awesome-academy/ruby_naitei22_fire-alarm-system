@@ -3,7 +3,12 @@ en:
     models:
       user: "User"
       invitation: "Invitation"
+      sensor: "Sensor"
     attributes:
+      sensor:
+        name: "Name"
+        location: "Location"
+        status: "Status"
       invitation:
         code: "Code"
         purpose: "Purpose"
@@ -13,3 +18,6 @@ en:
           must_exist_for_supervisor: "must exist for a supervisor"
         admin_id:
           cannot_be_set_for_admin: "cannot be set for an admin user"
+  errors:
+    messages:
+      blank: "shouldnt be blank"
