@@ -1,0 +1,27 @@
+vi:
+  services:
+    authentication:
+      login:
+        invalid_credentials: "Email hoặc mật khẩu không chính xác."
+        not_active: "Tài khoản của bạn chưa được kích hoạt."
+      signup:
+        invalid_invitation: "Mã mời không hợp lệ, đã hết hạn hoặc đã được sử dụng."
+  api:
+    v1:
+      authentication:
+        login:
+          success: "Đăng nhập thành công."
+        signup:
+          success: "Đăng ký thành công. Bạn đã được tự động đăng nhập."
+        logout:
+          success: "Đăng xuất thành công."
+        implemented: "Endpoint này chưa được triển khai."
+      base_controller:
+        not_authenticated: "Chưa xác thực: %{message}"
+        not_authorized: "Bị cấm: %{message}"
+        errors:
+          missing_token: "Thiếu mã thông báo truy cập."
+          token_expired: "Mã thông báo truy cập đã hết hạn."
+          invalid_token: "Token không hợp lệ: %{error}"
+          auth_failed: "Xác thực không thành công."
+          admins_only: "Hành động này chỉ dành cho quản trị viên."

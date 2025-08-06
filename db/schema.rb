@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_08_05_073409) do
+ActiveRecord::Schema[7.0].define(version: 2025_08_06_072237) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -69,6 +69,18 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_05_073409) do
     t.index ["zone_id"], name: "index_cameras_on_zone_id"
   end
 
+  create_table "invitations", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "code", null: false
+    t.string "purpose", null: false
+    t.boolean "used", default: false, null: false
+    t.datetime "expires_at"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_invitations_on_code", unique: true
+    t.index ["user_id"], name: "index_invitations_on_user_id"
+  end
+
   create_table "sensor_logs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "sensor_id", null: false
     t.float "temperature"
@@ -109,11 +121,11 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_05_073409) do
     t.string "email", null: false
     t.string "phone"
     t.string "address"
-    t.string "role", default: "SUPERVISOR"
     t.bigint "admin_id"
-    t.boolean "is_active", default: false
+    t.boolean "is_active", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "role", default: 0
     t.index ["admin_id"], name: "index_users_on_admin_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["phone"], name: "index_users_on_phone", unique: true
@@ -137,6 +149,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_05_073409) do
   add_foreign_key "alerts", "sensors"
   add_foreign_key "alerts", "zones"
   add_foreign_key "cameras", "zones"
+  add_foreign_key "invitations", "users"
   add_foreign_key "sensor_logs", "sensors"
   add_foreign_key "sensors", "zones"
   add_foreign_key "tokens", "users"

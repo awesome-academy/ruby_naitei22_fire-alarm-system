@@ -1,0 +1,8 @@
+en:
+  api:
+    v1:
+      users:
+        update:
+          success: "Profile updated successfully."
+        not_authorized: "You are not authorized to perform this action."
+        not_found: "User not found."

@@ -1,0 +1,8 @@
+vi:
+  api:
+    v1:
+      users:
+        update:
+          success: "Cập nhật hồ sơ thành công."
+        not_authorized: "Bạn không có quyền thực hiện hành động này."
+        not_found: "Người dùng không được tìm thấy."

@@ -1,6 +1,16 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  namespace :api do
+    namespace :v1 do
+      scope :auth, controller: :authentication do
+        post :signup
+        post :login
+        post :logout
+        get :profile
+        patch :update_role
+      end
 
-  # Defines the root path route ("/")
-  # root "articles#index"
+      resources :users, only: %i(index show update)
+      resources :invitations, only: %i(index create)
+    end
+  end
 end

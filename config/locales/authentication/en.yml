@@ -1,0 +1,27 @@
+en:
+  services:
+    authentication:
+      login:
+        invalid_credentials: "Invalid email or password."
+        not_active: "Your account is not active."
+      signup:
+        invalid_invitation: "The invitation code is invalid, expired, or has been used."
+  api:
+    v1:
+      authentication:
+        login:
+          success: "Login successful."
+        signup:
+          success: "Signup successful. You are now logged in."
+        logout:
+          success: "Logged out successfully."
+        implemented: "This endpoint is not yet implemented."
+      base_controller:
+        not_authenticated: "Not Authenticated: %{message}"
+        not_authorized: "Forbidden: %{message}"
+        errors:
+          missing_token: "Access token is missing."
+          token_expired: "Access token has expired."
+          invalid_token: "Invalid token: %{error}"
+          auth_failed: "Authentication failed."
+          admins_only: "This action is restricted to administrators."
