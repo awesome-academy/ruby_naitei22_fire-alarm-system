@@ -9,6 +9,7 @@ Rails.application.routes.draw do
         patch :update_role
       end
 
+      resources :zones, only: %i(index show create update destroy)
       resources :users, only: %i(index show update)
       resources :invitations, only: %i(index create)
       resources :cameras, only: %i(index show create update destroy) do
