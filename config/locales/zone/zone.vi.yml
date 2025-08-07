@@ -1,0 +1,12 @@
+vi:
+  zones:
+    index:
+      success: "Danh sách tất cả vùng"
+    show:
+      success: "Chi tiết vùng"
+    create:
+      success: "Tạo vùng thành công"
+      failure: "Tạo vùng thất bại"
+    update:
+      success: "Cập nhật vùng thành công"
+      failure: "Cập nhật vùng thất bại"
