@@ -1,0 +1,17 @@
+en:
+  zones:
+    index:
+      success: "List of all zones"
+    show:
+      success: "Zone details"
+    create:
+      success: "Zone created successfully"
+      failure: "Zone creation failed"
+    errors:
+      not_found: "Zone not found."
+    update:
+      success: "Zone updated successfully"
+      failure: "Zone update failed"
+    destroy:
+      success: "Zone deleted successfully"
+      failure: "Failed to delete zone"
