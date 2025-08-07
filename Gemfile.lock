@@ -198,6 +198,8 @@ GEM
     ostruct (0.6.3)
     pagy (9.3.5)
     parallel (1.23.0)
+    paranoia (2.6.4)
+      activerecord (>= 5.1, < 7.2)
     parser (3.2.2.3)
       ast (~> 2.4.1)
       racc
@@ -346,6 +348,7 @@ DEPENDENCIES
   jwt
   mysql2 (~> 0.5)
   pagy
+  paranoia (~> 2.6)
   pry-byebug
   puma (~> 5.0)
   rails (~> 7.0.5)

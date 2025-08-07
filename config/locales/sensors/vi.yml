@@ -17,3 +17,13 @@ vi:
           error: "Thêm nhiều cảm biến thất bại"
           success: "Tạo %{count} cảm biến thành công."
           missing_zone: "Không tìm thấy khu vực có ID: %{ids}"
+      sensor_logs:
+        chart:
+          cant_find_sensorid: "Không phát hiện sensor id"
+        not_found: "Không tìm thấy log"
+        destroy:
+          deleted: "Xóa log thành công"
+        stats:
+          success: "Thống kê trong %{hours} giờ qua được lấy thành công."
+  errors:
+    invalid_time_format: "Thời gian không hợp lệ: %{message}"
