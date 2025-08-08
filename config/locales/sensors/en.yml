@@ -1,0 +1,19 @@
+en:
+  api:
+    v1:
+      sensors:
+        sensor_not_found: "Sensor not found"
+        forbidden: "Forbidden"
+        zone_not_found: "Zone not found"
+        index:
+          success: "Sensor list"
+        create:
+          success: "Create sensor success"
+        update:
+          success: "Update sensor success!"
+        destroy:
+          success: "Delete sensor success!"
+        bulk:
+          error: "Bulk sensors failed"
+          success: "Bulk %{count} sensors successfully"
+          missing: "Couldnt find zone that ID: %{ids}"

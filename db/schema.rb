@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_08_06_084200) do
+ActiveRecord::Schema[7.0].define(version: 2025_08_07_053515) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -97,7 +97,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_06_084200) do
     t.string "location"
     t.float "threshold"
     t.integer "sensitivity"
-    t.string "status", default: "ACTIVE"
+    t.integer "status", default: 0, null: false
     t.bigint "zone_id", null: false
     t.float "latitude"
     t.float "longitude"
