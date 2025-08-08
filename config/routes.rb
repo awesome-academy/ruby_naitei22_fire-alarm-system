@@ -24,7 +24,12 @@ Rails.application.routes.draw do
         end
         post :capture_and_upload_snapshot, on: :member
       end
-      
+      resources :alerts, only: %i(index show create) do
+        collection do
+          get :stats
+        end
+        patch :status, on: :member, action: :update_status
+      end
     end
   end
 end

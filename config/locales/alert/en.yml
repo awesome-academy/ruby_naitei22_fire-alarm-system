@@ -1,0 +1,31 @@
+en:
+  activerecord:
+    models:
+      alert: "Alert"
+    attributes:
+      alert:
+        message: "Message"
+        status: "Status"
+        origin: "Origin"
+        origin/sensor_threshold: "Sensor Threshold"
+        origin/sensor_error: "Sensor Error"
+        origin/ml_detection: "ML Detection"
+        origin/manual_input: "Manual Input"
+  api:
+    v1:
+      alerts:
+        create:
+          success: "Alert created successfully."
+        update_status:
+          success: "Alert status updated successfully."
+  alert_mailer:
+    new_alert_notification:
+      subject: "🔥 [WARNING] An incident has been detected!"
+      header: "🔥 Urgent System Alert!"
+      intro_html: "A new alert has been recorded in the area: <strong>%{zone_name}</strong>"
+      content_label: "Content"
+      origin_label: "Source"
+      time_label: "Time"
+      snapshot_header: "Image from camera"
+      call_to_action: "Please log in to the system to handle it."
+      thank_you: "Thank you."

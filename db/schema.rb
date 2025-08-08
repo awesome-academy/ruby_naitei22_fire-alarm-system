@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_08_07_053515) do
+ActiveRecord::Schema[7.0].define(version: 2025_08_07_051235) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -41,17 +41,18 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_07_053515) do
 
   create_table "alerts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "message"
-    t.string "origin", default: "SENSOR_THRESHOLD"
-    t.bigint "sensor_id"
-    t.bigint "zone_id"
-    t.bigint "camera_id"
+    t.integer "origin", default: 0
+    t.string "owner_type", null: false
+    t.bigint "owner_id", null: false
+    t.bigint "zone_id", null: false
     t.string "image_url"
-    t.string "status", default: "PENDING"
+    t.integer "status", default: 0
     t.boolean "via_email", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["camera_id"], name: "index_alerts_on_camera_id"
-    t.index ["sensor_id"], name: "index_alerts_on_sensor_id"
+    t.bigint "user_id"
+    t.index ["owner_type", "owner_id"], name: "index_alerts_on_owner"
+    t.index ["user_id"], name: "index_alerts_on_user_id"
     t.index ["zone_id"], name: "index_alerts_on_zone_id"
   end
 
@@ -61,7 +62,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_07_053515) do
     t.bigint "zone_id", null: false
     t.float "latitude"
     t.float "longitude"
-    t.string "status", default: "ONLINE"
+    t.integer "status", default: 0
     t.boolean "is_detecting", default: false
     t.string "last_snapshot_url"
     t.datetime "created_at", null: false
@@ -97,7 +98,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_07_053515) do
     t.string "location"
     t.float "threshold"
     t.integer "sensitivity"
-    t.integer "status", default: 0, null: false
+    t.integer "status", default: 0
     t.bigint "zone_id", null: false
     t.float "latitude"
     t.float "longitude"
@@ -146,8 +147,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_07_053515) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "alerts", "cameras"
-  add_foreign_key "alerts", "sensors"
+  add_foreign_key "alerts", "users"
   add_foreign_key "alerts", "zones"
   add_foreign_key "cameras", "zones"
   add_foreign_key "invitations", "users"

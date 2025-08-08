@@ -8,7 +8,7 @@ class CreateAlerts < ActiveRecord::Migration[7.0]
       t.string :image_url
       t.integer :status, default: 0
       t.boolean :via_email, default: true
-      t.datetime :created_at, default: -> { 'CURRENT_TIMESTAMP' }
+      t.timestamps null: false
     end
   end
 end

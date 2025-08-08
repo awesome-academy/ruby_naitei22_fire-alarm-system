@@ -87,4 +87,14 @@ class Api::V1::BaseController < ApplicationController
       total_count: pagy_object.count
     }
   end
+
+  def render_paginated_response records, serializer
+    render json: {
+      data: ActiveModelSerializers::SerializableResource.new(
+        records,
+        each_serializer: serializer
+      ),
+      pagy: pagy_metadata(@pagy)
+    }, status: :ok
+  end
 end

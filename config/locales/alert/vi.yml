@@ -1,0 +1,31 @@
+vi:
+  activerecord:
+    models:
+      alert: "Cảnh báo"
+    attributes:
+      alert:
+        message: "Nội dung"
+        status: "Trạng thái"
+        origin: "Nguồn gốc"
+        origin/sensor_threshold: "Ngưỡng cảm biến"
+        origin/sensor_error: "Lỗi cảm biến"
+        origin/ml_detection: "Phát hiện bằng AI"
+        origin/manual_input: "Nhập thủ công"
+  api:
+    v1:
+      alerts:
+        create:
+          success: "Tạo cảnh báo thành công."
+        update_status:
+          success: "Cập nhật trạng thái cảnh báo thành công."
+  alert_mailer:
+    new_alert_notification:
+      subject: "🔥 [CẢNH BÁO] Hệ thống phát hiện sự cố!"
+      header: "🔥 Cảnh báo hệ thống khẩn cấp!"
+      intro_html: "Một cảnh báo mới đã được ghi nhận tại khu vực: <strong>%{zone_name}</strong>"
+      content_label: "Nội dung"
+      origin_label: "Nguồn gốc"
+      time_label: "Thời gian"
+      snapshot_header: "Hình ảnh từ camera"
+      call_to_action: "Vui lòng đăng nhập vào hệ thống để xử lý."
+      thank_you: "Xin cảm ơn."
