@@ -7,7 +7,7 @@ def run_seeds
 
   cleanup_database
   create_users_with_faker
-  create_zones_and_cameras_with_faker
+  create_zones_and_sensors_and_cameras_with_faker
 end
 
 def cleanup_database
@@ -42,7 +42,7 @@ def create_users_with_faker
   @supervisors = User.where(role: :supervisor)
 end
 
-def create_zones_and_cameras_with_faker
+def create_zones_and_sensors_and_cameras_with_faker
   3.times do |i|
     zone = Zone.find_or_create_by!(name: "Khu vực #{('A'..'Z').to_a[i]}") do |z|
       z.description = Faker::Lorem.sentence(word_count: 10)
@@ -50,12 +50,26 @@ def create_zones_and_cameras_with_faker
       z.user = @supervisors.sample
     end
 
+    # Seed cameras
     rand(2..4).times do |j|
       Camera.find_or_create_by!(name: "Camera #{zone.name} - #{j + 1}") do |camera|
         camera.url = "rtsp://fake.stream.com/#{zone.name.parameterize}/cam#{j + 1}"
         camera.status = Camera.statuses.keys.sample
         camera.zone = zone
         camera.is_detecting = [true, false].sample
+      end
+    end
+
+    # Seed sensors
+    rand(2..5).times do |k|
+      Sensor.find_or_create_by!(name: "Cảm biến #{zone.name} - #{k + 1}") do |sensor|
+        sensor.location = Faker::Address.street_address
+        sensor.status = Sensor.statuses.keys.sample
+        sensor.zone = zone
+        sensor.threshold = rand(30..70)
+        sensor.sensitivity = rand(1..10)
+        sensor.latitude = Faker::Address.latitude
+        sensor.longitude = Faker::Address.longitude
       end
     end
   end

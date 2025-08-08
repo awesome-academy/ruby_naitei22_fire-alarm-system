@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+        <style>
+            .snapshot-image {
+                max-width: 500px;
+                height: auto;
+                border: 1px solid;
+                border-radius: 4px;
+                padding: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1><%= t(".header") %></h1>
+        <p>
+            <%= t(".intro_html", zone_name: @alert.zone.name).html_safe %>
+        </p>
+        <p>
+            <strong><%= t(".content_label") %>:</strong> <%= @alert.message %>
+        </p>
+        <p>
+            <strong><%= t(".origin_label") %>:</strong>
+            <%= @alert.class.human_attribute_name("origin.#{@alert.origin}") %>
+        </p>
+        <p>
+            <strong><%= t(".time_label") %>:</strong>
+            <%= l @alert.created_at, format: :long %>
+        </p>
+        <% if @alert.snapshot.attached? %>
+            <p><%= t(".snapshot_header") %>:</p>
+            <p>
+                <%= image_tag @alert.image_url, class: "snapshot-image", alt: "Snapshot Image" %>
+            </p>
+        <% end %>
+        <p><%= t(".call_to_action") %></p>
+        <p><%= t(".thank_you") %></p>
+    </body>
+</html>

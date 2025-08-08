@@ -1,0 +1,19 @@
+vi:
+  api:
+    v1:
+      sensors:
+        sensor_not_found: "Không tìm thấy sensor"
+        forbidden: "Bạn không phải admin"
+        zone_not_found: "Không tìm thấy zone"
+        index:
+          success: "Danh sách sensor"
+        create:
+          success: "Tạo sensor thành công"
+        update:
+          success: "Cập nhật sensor thành công!"
+        destroy:
+          success: "Xóa sensor thành công"
+        bulk:
+          error: "Thêm nhiều cảm biến thất bại"
+          success: "Tạo %{count} cảm biến thành công."
+          missing_zone: "Không tìm thấy khu vực có ID: %{ids}"
