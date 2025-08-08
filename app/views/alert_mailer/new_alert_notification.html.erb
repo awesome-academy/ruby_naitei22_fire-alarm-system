@@ -6,7 +6,7 @@
             .snapshot-image {
                 max-width: 500px;
                 height: auto;
-                border: 1px solid;
+                border: 1px solid #ddd;
                 border-radius: 4px;
                 padding: 5px;
             }
@@ -21,14 +21,12 @@
             <strong><%= t(".content_label") %>:</strong> <%= @alert.message %>
         </p>
         <p>
-            <strong><%= t(".origin_label") %>:</strong>
-            <%= @alert.class.human_attribute_name("origin.#{@alert.origin}") %>
+            <strong><%= t(".origin_label") %>:</strong> <%= @alert.class.human_attribute_name("origin.#{@alert.origin}") %>
         </p>
         <p>
-            <strong><%= t(".time_label") %>:</strong>
-            <%= l @alert.created_at, format: :long %>
+            <strong><%= t(".time_label") %>:</strong> <%= l @alert.created_at, format: :long %>
         </p>
-        <% if @alert.snapshot.attached? %>
+        <% if @alert.image_url.present? %>
             <p><%= t(".snapshot_header") %>:</p>
             <p>
                 <%= image_tag @alert.image_url, class: "snapshot-image", alt: "Snapshot Image" %>

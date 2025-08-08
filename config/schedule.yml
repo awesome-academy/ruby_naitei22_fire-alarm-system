@@ -1,0 +1,4 @@
+scan_cameras_job:
+  cron: "*/5 * * * *"
+  class: "Detections::ProcessAllCamerasJob"
+  queue: "default"

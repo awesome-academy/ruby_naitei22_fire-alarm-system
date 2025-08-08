@@ -22,3 +22,17 @@ vi:
     snapshots:
       fake_capture:
         no_samples_found: "Không tìm thấy ảnh mẫu trong thư mục %{dir}"
+    ml_clients:
+      timeout: "Dịch vụ AI bị quá thời gian chờ: %{message}"
+      connection_error: "Lỗi kết nối đến dịch vụ AI: %{message}"
+  alert_mailer:
+    new_alert_notification:
+      subject: "🔥 [CẢNH BÁO] Đã phát hiện sự cố!"
+      header: "Cảnh báo hệ thống khẩn cấp!"
+      intro_html: "Một cảnh báo mới đã được ghi nhận trong khu vực: <strong>%{zone_name}</strong>"
+      content_label: "Nội dung"
+      origin_label: "Nguồn gốc"
+      time_label: "Thời gian"
+      snapshot_header: "Ảnh chụp từ camera"
+      call_to_action: "Vui lòng đăng nhập vào hệ thống để xử lý."
+      thank_you: "Cảm ơn bạn."
