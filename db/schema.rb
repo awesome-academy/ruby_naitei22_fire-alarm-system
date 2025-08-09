@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_08_07_053515) do
+ActiveRecord::Schema[7.0].define(version: 2025_08_09_032631) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -79,7 +79,9 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_07_053515) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "email"
     t.index ["code"], name: "index_invitations_on_code", unique: true
+    t.index ["email"], name: "index_invitations_on_email"
     t.index ["user_id"], name: "index_invitations_on_user_id"
   end
 

@@ -6,6 +6,20 @@ en:
         not_active: "Your account is not active."
       signup:
         invalid_invitation: "The invitation code is invalid, expired, or has been used."
+      refresh_token:
+        invalid_token: "Invalid refresh token."
+        token_expired: "Refresh token has expired."
+  invitation_mailer:
+    invitation:
+      subject: "%{creator_name} has invited you to join the Fire Alarm System"
+      header: "You're Invited!"
+      greeting: "Hi there"
+      body_html: "<strong>%{creator_name}</strong> has invited you to join the Fire Alarm System."
+      instruction: "To accept the invitation and create your account, please click the link below:"
+      link_text: "Create my account"
+      code_notice_html: "Your invitation code is: <strong>%{invitation_code}</strong>"
+      expiration_notice: "This invitation will expire on %{expiration_date}."
+      thanks: "Thanks!"
   api:
     v1:
       authentication:
@@ -16,6 +30,8 @@ en:
         logout:
           success: "Logged out successfully."
         implemented: "This endpoint is not yet implemented."
+        refresh:
+          success: "Token refreshed successfully."
       base_controller:
         not_authenticated: "Not Authenticated: %{message}"
         not_authorized: "Forbidden: %{message}"

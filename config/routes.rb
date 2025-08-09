@@ -7,6 +7,7 @@ Rails.application.routes.draw do
         post :logout
         get :profile
         patch :update_role
+        post :refresh
       end
 
       resources :sensors do

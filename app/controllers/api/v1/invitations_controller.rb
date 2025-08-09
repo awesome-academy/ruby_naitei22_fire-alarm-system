@@ -12,7 +12,11 @@ class Api::V1::InvitationsController < Api::V1::BaseController
 
   # POST /api/v1/invitations
   def create
-    result = Invitations::CreationService.new(creator: @current_user).call
+    result = Invitations::CreationService.new(
+      creator: @current_user,
+      email: invitation_params[:email]
+    ).call
+
     unless result.success?
       return render_error(result.errors, :unprocessable_entity)
     end
@@ -24,5 +28,11 @@ class Api::V1::InvitationsController < Api::V1::BaseController
       },
       :created
     )
+  end
+
+  private
+
+  def invitation_params
+    params.require(:invitation).permit(Invitation::INVITATION_PERMIT)
   end
 end
