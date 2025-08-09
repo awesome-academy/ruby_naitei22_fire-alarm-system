@@ -57,6 +57,18 @@ class Api::V1::AuthenticationController < Api::V1::BaseController
            status: :not_implemented
   end
 
+  # POST /api/v1/auth/refresh
+  def refresh
+    result = Authentication::RefreshTokenService.new(
+      refresh_token: cookies[:refreshToken]
+    ).call
+
+    return render_error(result.error, :unauthorized) unless result.success?
+
+    set_auth_cookies(result.tokens)
+    render_success({message: t(".success")}, :ok)
+  end
+
   private
 
   def signup_params

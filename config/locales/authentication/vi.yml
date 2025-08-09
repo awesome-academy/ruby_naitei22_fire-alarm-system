@@ -6,6 +6,20 @@ vi:
         not_active: "Tài khoản của bạn chưa được kích hoạt."
       signup:
         invalid_invitation: "Mã mời không hợp lệ, đã hết hạn hoặc đã được sử dụng."
+      refresh_token:
+        invalid_token: "Mã làm mới không hợp lệ."
+        token_expired: "Mã làm mới đã hết hạn."
+  invitation_mailer:
+    invitation:
+      subject: "%{creator_name} đã mời bạn tham gia Hệ thống Báo cháy"
+      header: "Bạn đã được mời!"
+      greeting: "Chào bạn"
+      body_html: "<strong>%{creator_name}</strong> đã mời bạn tham gia Hệ thống Báo cháy."
+      instruction: "Để chấp nhận lời mời và tạo tài khoản của bạn, vui lòng nhấp vào liên kết dưới đây:"
+      link_text: "Tạo tài khoản của tôi"
+      code_notice_html: "Mã mời của bạn là: <strong>%{invitation_code}</strong>"
+      expiration_notice: "Mã mời này sẽ hết hạn vào %{expiration_date}."
+      thanks: "Cảm ơn bạn!"
   api:
     v1:
       authentication:
@@ -16,6 +30,8 @@ vi:
         logout:
           success: "Đăng xuất thành công."
         implemented: "Endpoint này chưa được triển khai."
+        refresh:
+          success: "Làm mới token thành công."
       base_controller:
         not_authenticated: "Chưa xác thực: %{message}"
         not_authorized: "Bị cấm: %{message}"

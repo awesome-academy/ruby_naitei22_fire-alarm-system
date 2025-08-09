@@ -1,0 +1,25 @@
+<h1><%= t(".header") %></h1>
+
+<p><%= t(".greeting") %>,</p>
+
+<p>
+    <%= t(".body_html", creator_name: @creator.name).html_safe %>
+</p>
+
+<p>
+    <%= t(".instruction") %>
+</p>
+
+<p>
+    <%= link_to t(".link_text"), @signup_url %>
+</p>
+
+<p>
+    <%= t(".code_notice_html", invitation_code: @invitation.code).html_safe %>
+</p>
+
+<p>
+    <%= t(".expiration_notice", expiration_date: l(@invitation.expires_at, format: :long)) %>
+</p>
+
+<p><%= t(".thanks") %></p>

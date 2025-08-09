@@ -6,6 +6,7 @@ class Invitation < ApplicationRecord
   PURPOSE_SIGNUP = "signup"
   VALID_PURPOSES = [PURPOSE_SIGNUP].freeze
   CODE_PREFIX = "SIGNUP"
+  INVITATION_PERMIT = %i(email).freeze
 
   belongs_to :user
 
@@ -22,6 +23,12 @@ class Invitation < ApplicationRecord
 
   validates :code, presence: true, uniqueness: {case_sensitive: false}
   validates :purpose, presence: true, inclusion: {in: VALID_PURPOSES}
+  validates :email, presence: true, format: {with: URI::MailTo::EMAIL_REGEXP}
+
+  def signup_url
+    base_url = ENV.fetch("FRONTEND_URL")
+    "#{base_url}/signup?invitation_code=#{code}"
+  end
 
   private
 
