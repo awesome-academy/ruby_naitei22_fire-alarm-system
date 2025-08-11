@@ -50,4 +50,12 @@ class User < ApplicationRecord
 
     errors.add(:admin, :must_exist_for_supervisor)
   end
+  def self.from_google_payload(payload)
+    find_or_create_by(email: payload["email"]) do |user|
+      user.name = payload["name"]
+
+      user.password = SecureRandom.hex(16) if user.respond_to?(:password=)
+      user.role = 'admin'
+    end
+  end
 end

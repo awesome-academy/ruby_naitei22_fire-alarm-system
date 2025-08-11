@@ -7,6 +7,7 @@ Rails.application.routes.draw do
         post :logout
         get :profile
         patch :update_role
+        post "google", to: "authentication#google_auth"
       end
 
       resources :sensors do

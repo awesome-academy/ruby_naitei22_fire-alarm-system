@@ -9,6 +9,8 @@ vi:
   api:
     v1:
       authentication:
+        google:
+          success: "Đăng nhập cùng google thành công"
         login:
           success: "Đăng nhập thành công."
         signup:
