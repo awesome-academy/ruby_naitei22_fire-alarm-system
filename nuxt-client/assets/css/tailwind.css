@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Bạn có thể thêm các style tùy chỉnh ở đây */
+/* Ví dụ: */
+/* body {
+  @apply font-sans;
+} */
