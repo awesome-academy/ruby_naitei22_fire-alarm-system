@@ -1,3 +1,4 @@
+# app/services/authentication/token_generator_service.rb
 # frozen_string_literal: true
 
 module Authentication
@@ -5,7 +6,7 @@ module Authentication
     ACCESS_TOKEN_LIFESPAN = 15.minutes
     REFRESH_TOKEN_LIFESPAN = 7.days
 
-    def initialize user
+    def initialize(user:)
       @user = user
     end
 
@@ -16,15 +17,17 @@ module Authentication
       ActiveRecord::Base.transaction do
         @user.tokens.destroy_all
         @user.tokens.create!(
-          refresh_token:,
+          refresh_token: refresh_token,
           expires_at: REFRESH_TOKEN_LIFESPAN.from_now
         )
       end
 
-      {access_token:, refresh_token:}
+      # Trả về hash chứa các token khi thành công
+      { access_token: access_token, refresh_token: refresh_token }
+
     rescue ActiveRecord::RecordInvalid => e
-      log_message = "Failed to create token for user #{@user.id}: #{e.message}"
-      Rails.logger.error(log_message)
+      # Log lỗi và trả về nil khi thất bại
+      Rails.logger.error("Failed to create token for user #{@user.id}: #{e.message}")
       nil
     end
 

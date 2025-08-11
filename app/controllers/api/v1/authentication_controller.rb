@@ -57,6 +57,22 @@ class Api::V1::AuthenticationController < Api::V1::BaseController
            status: :not_implemented
   end
 
+  # POST /api/v1/auth/google
+  def google_auth
+    result = Authentication::GoogleAuthService.new(token: params[:token]).call
+
+    return render_error(result.error, :unauthorized) unless result.success?
+
+    set_auth_cookies(result.tokens)
+    render_success(
+      {
+        message: t("api.v1.authentication.google.success"),
+        user: UserSerializer.new(result.user)
+      },
+      :ok
+    )
+  end
+
   private
 
   def signup_params

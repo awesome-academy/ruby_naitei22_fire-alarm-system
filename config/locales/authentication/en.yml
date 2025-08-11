@@ -9,6 +9,8 @@ en:
   api:
     v1:
       authentication:
+        google:
+          success: "Successfully authenticated with Google."
         login:
           success: "Login successful."
         signup:
