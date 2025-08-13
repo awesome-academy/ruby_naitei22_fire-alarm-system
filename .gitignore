@@ -34,3 +34,13 @@
 .env
 *.h5
 *.hdf5
+#-----------nuxt-client-------------
+/nuxt-client/node_modules/
+/nuxt-client/.output/
+/nuxt-client/.data/
+/nuxt-client/.nuxt/
+/nuxt-client/.nitro/
+/nuxt-client/.cache/
+/nuxt-client/dist/
+/nuxt-client/logs/
+/nuxt-client/*.log
