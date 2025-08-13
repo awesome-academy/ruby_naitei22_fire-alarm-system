@@ -46,6 +46,18 @@ services:
     environment:
       - PORT=5001
     restart: unless-stopped
+  client:
+    build:
+      context: ./nuxt-client
+      dockerfile: Dockerfile
+    container_name: fire_alarm_client_nuxt
+    ports:
+      - "8080:3000" 
+    volumes:
+      - ./nuxt-client:/app 
+      - /app/node_modules 
+    environment:
+      - NUXT_PUBLIC_API_BASE=http://localhost:3000
 volumes:
   # db_data:
   redis_data:
