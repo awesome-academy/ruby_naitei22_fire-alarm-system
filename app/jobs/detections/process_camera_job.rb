@@ -37,9 +37,26 @@ module Detections
         snapshot_path:
       ).call
 
-      return if result.success?
+      unless result.success?
+        return handle_error(
+          "Failed to create alert: #{result.errors.join(', ')}"
+        )
+      end
 
-      handle_error("Failed to create alert: #{result.errors.join(', ')}")
+      broadcast_alert(result.alert)
+    end
+
+    def broadcast_alert alert
+      payload = {
+        id: alert.id,
+        message: alert.message,
+        origin: alert.origin,
+        status: alert.status,
+        zone_name: alert.zone.name,
+        created_at: alert.created_at.iso8601
+      }
+      ActionCable.server.broadcast("alerts_channel", payload)
+      Rails.logger.info "Broadcasted new alert ##{alert.id} to alerts_channel"
     end
 
     def fire_detected? prediction

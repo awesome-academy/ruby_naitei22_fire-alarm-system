@@ -52,7 +52,7 @@ class Api::V1::BaseController < ApplicationController
   end
 
   def set_locale
-    header_locale = request.headers["Accept-Language"]&.split&.first
+    header_locale = request.headers["Accept-Language"]&.scan(/^[a-z]{2}/)&.first
     I18n.locale = header_locale || I18n.default_locale
   end
 
