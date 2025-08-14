@@ -8,6 +8,7 @@ def run_seeds
   cleanup_database
   create_users_with_faker
   create_zones_and_sensors_and_cameras_with_faker
+  create_sensor_logs_for_chart
 end
 
 def cleanup_database
@@ -73,6 +74,30 @@ def create_zones_and_sensors_and_cameras_with_faker
       end
     end
   end
+end
+
+def create_sensor_logs_for_chart
+  interval = 1.hour
+  start_time = 1.days.ago
+  end_time = Time.current
+
+  Sensor.find_each do |sensor|
+    current_time = start_time
+
+    while current_time <= end_time
+      SensorLog.create!(
+        sensor: sensor,
+        temperature: rand(22.0..32.0).round(1),
+        humidity: rand(55..85),
+        created_at: current_time,
+        updated_at: current_time
+      )
+
+      current_time += interval
+    end
+  end
+
+  puts "Sensor logs seeded!"
 end
 
 run_seeds

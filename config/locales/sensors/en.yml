@@ -17,3 +17,13 @@ en:
           error: "Bulk sensors failed"
           success: "Bulk %{count} sensors successfully"
           missing: "Couldnt find zone that ID: %{ids}"
+      sensor_logs:
+        chart:
+          cant_find_sensorid: "Sensor id not found"
+        not_found: "Log not found"
+        destroy:
+          deleted: "Log deleted successfully"
+        stats:
+          success: "Statistics for the past %{hours} hours retrieved successfully."
+  errors:
+    invalid_time_format: "Invalid time format: %{message}"

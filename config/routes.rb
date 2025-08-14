@@ -17,6 +17,13 @@ Rails.application.routes.draw do
         end
       end
 
+      resources :logs, controller: "sensor_logs", only: [:index, :show, :destroy] do
+        collection do
+          get :stats
+          get :chart
+        end
+      end
+
       resources :users, only: %i(index show update)
       resources :invitations, only: %i(index create)
       resources :cameras, only: %i(index show create update destroy) do

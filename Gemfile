@@ -32,6 +32,7 @@ gem "jbuilder"
 gem "jsonapi-serializer"
 gem "jwt"
 gem "pagy"
+gem "paranoia", "~> 2.6"
 # Use Redis adapter to run Action Cable in production
 # gem "redis", "~> 4.0"
 
