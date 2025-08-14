@@ -10,7 +10,7 @@ module RailsTutorial
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
-
+    # config.api_only = true
     # Configuration for the application, engines, and railties goes here.
     config.i18n.load_path += Dir[Rails.root.join("config", "locales", "**", "*.{rb,yml}")]
     config.i18n.default_locale = :en

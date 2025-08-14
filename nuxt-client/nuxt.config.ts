@@ -7,12 +7,7 @@ export default defineNuxtConfig({
   ssr: true,
   runtimeConfig: {
     public: {
-      apiBase: '/api/v1',
-    }
-  },
-  routeRules: {
-    '/api/**': {
-      proxy: `${process.env.NUXT_PUBLIC_API_BASE}/**`,
+      apiBase: process.env.NUXT_PUBLIC_API_BASE,
     }
   },
   app: {

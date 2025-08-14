@@ -31,9 +31,9 @@
 /config/master.key
 /config/database.yml
 /test/*
-.env
-*.h5
-*.hdf5
+**/.env
+**/.env.docker
+**/.env.*.local
 #-----------nuxt-client-------------
 /nuxt-client/node_modules/
 /nuxt-client/.output/
@@ -44,3 +44,14 @@
 /nuxt-client/dist/
 /nuxt-client/logs/
 /nuxt-client/*.log
+#--------------fire-detection-ai-service------------------
+/fire-detection-ai-service/venv/
+/fire-detection-ai-service/.venv/
+
+# Python cache files
+/fire-detection-ai-service/__pycache__/
+/fire-detection-ai-service/*.pyc
+
+# Ignore large model files
+*.h5
+*.hdf5
