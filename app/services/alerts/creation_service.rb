@@ -9,12 +9,18 @@ module Alerts
     end
 
     def call
-      image_url = upload_snapshot
+      upload_result = upload_to_cloudinary(@snapshot_path)
+      unless upload_result.success?
+        return Result.new(
+          success?: false,
+          errors: [upload_result.error]
+        )
+      end
 
       alert = @camera.alerts.build(
         message: generate_message,
         origin: :ml_detection,
-        image_url:,
+        image_url: upload_result.url,
         zone: @camera.zone
       )
 
@@ -34,9 +40,15 @@ module Alerts
       upload_result.success? ? upload_result.url : nil
     end
 
+    def upload_to_cloudinary file_path
+      Cloudinary::UploadService.new.call(file_path:)
+    end
+
     def generate_message
-      "FIRE DETECTED by AI at camera '#{@camera.name}'. " \
-      "Confidence: #{@confidence.round(2)}"
+      <<~MESSAGE.squish
+        FIRE DETECTED by AI at camera '#{@camera.name}'.
+        Confidence: #{@confidence.round(2)}
+      MESSAGE
     end
   end
 end

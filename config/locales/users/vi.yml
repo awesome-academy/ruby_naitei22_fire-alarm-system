@@ -1,8 +1,25 @@
 vi:
+  activerecord:
+    attributes:
+      user:
+        admin_id: "ID Quản trị viên"
+        admin: "Quản trị viên"
+    errors:
+      models:
+        user:
+          attributes:
+            admin_id:
+              cannot_be_set_for_admin: "không thể đặt cho người dùng quản trị"
+            admin:
+              must_exist_for_supervisor: "phải được chỉ định cho người giám sát"
   api:
     v1:
       users:
+        index:
+          success: "Lấy danh sách người dùng thành công."
         update:
           success: "Cập nhật hồ sơ thành công."
         not_authorized: "Bạn không có quyền thực hiện hành động này."
         not_found: "Người dùng không được tìm thấy."
+        invalid_role: "Vai trò không hợp lệ."
+        cannot_demote_self: "Bạn không thể hạ cấp bản thân xuống vai trò thấp hơn."

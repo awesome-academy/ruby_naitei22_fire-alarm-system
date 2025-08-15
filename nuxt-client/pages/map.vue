@@ -122,7 +122,7 @@ import MapCameraInfoTable from '~/components/map/MapCameraInfoTable.vue';
 import MapAlertInfoTable from '~/components/map/MapAlertInfoTable.vue';
 import AppSpinner from '~/components/ui/AppSpinner.vue';
 import { ArrowPathIcon } from '@heroicons/vue/20/solid';
-import type { Zone, Sensor, Camera, Alert } from '~/types/api';
+import type { Zone, Sensor, Camera, Alert, PaginatedResponse } from '~/types/api';
 import type { Map } from 'leaflet';
 import L from 'leaflet';
 
@@ -145,16 +145,20 @@ const activeTab = ref<'sensors' | 'cameras' | 'alerts'>('sensors');
 const { data: mapData, pending, error, refresh } = useAsyncData(
     'map-all-data',
     async () => {
+        const highLimit = { limit: 1000 };
+
         const [sensorsRes, camerasRes, alertsRes, zonesRes] = await Promise.allSettled([
-            api.sensors.getAll(),
-            api.cameras.getAll(),
-            api.alerts.getAll({ status: 'PENDING', limit: 100 }),
-            api.zones.getAll({ limit: 50 })
+            api.sensors.getAll(highLimit),
+            api.cameras.getAll(highLimit),
+            api.alerts.getAll({ status: 'PENDING', ...highLimit }),
+            api.zones.getAll(highLimit)
         ]);
-        const sensors = sensorsRes.status === 'fulfilled' ? sensorsRes.value : [];
-        const cameras = camerasRes.status === 'fulfilled' ? camerasRes.value : [];
-        const activeAlerts = alertsRes.status === 'fulfilled' ? alertsRes.value.data : [];
-        const zones = zonesRes.status === 'fulfilled' ? zonesRes.value : [];
+
+        const sensors = sensorsRes.status === 'fulfilled' ? (sensorsRes.value as PaginatedResponse<Sensor>).data : [];
+        const cameras = camerasRes.status === 'fulfilled' ? (camerasRes.value as PaginatedResponse<Camera>).data : [];
+        const activeAlerts = alertsRes.status === 'fulfilled' ? (alertsRes.value as PaginatedResponse<Alert>).data : [];
+        const zones = zonesRes.status === 'fulfilled' ? (zonesRes.value as PaginatedResponse<Zone>).data : [];
+        
         return { sensors, cameras, activeAlerts, zones };
     },
     { server: false, lazy: true }
@@ -163,10 +167,14 @@ const { data: mapData, pending, error, refresh } = useAsyncData(
 const sensors = computed<Sensor[]>(() => mapData.value?.sensors || []);
 const cameras = computed<Camera[]>(() => mapData.value?.cameras || []);
 const activeAlerts = computed<Alert[]>(() => mapData.value?.activeAlerts || []);
+const zones = computed<Zone[]>(() => mapData.value?.zones || []);
+
 const alertedSensorIds = computed(() => new Set(activeAlerts.value.map(alert => alert.sensorId).filter(Boolean)));
+
 const initialCoords = computed<[number, number] | null>(() => {
-    if (!mapData.value) return null;
-    const firstValidZone = mapData.value.zones.find(z => z.latitude != null && z.longitude != null);
+    if (!zones.value || zones.value.length === 0) return [10.7769, 106.7009]; // Default to HCMC
+    
+    const firstValidZone = zones.value.find(z => z.latitude != null && z.longitude != null);
     return firstValidZone ? [firstValidZone.latitude!, firstValidZone.longitude!] : [10.7769, 106.7009];
 });
 
@@ -189,8 +197,8 @@ const handleRowClick = async (item: SelectedItem) => {
         map.flyTo([item.lat, item.lon], 18, { animate: true, duration: 0.8 });
         setTimeout(() => {
             mapLeafletRef.value?.mapInstance?.eachLayer(layer => {
-                if (layer.options?.itemId === item.id && typeof layer.openPopup === 'function') {
-                    layer.openPopup();
+                if (layer.options?.itemId === item.id && typeof (layer as any).openPopup === 'function') {
+                    (layer as any).openPopup();
                 }
             });
         }, 900);

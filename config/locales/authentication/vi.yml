@@ -9,6 +9,8 @@ vi:
       refresh_token:
         invalid_token: "Mã làm mới không hợp lệ."
         token_expired: "Mã làm mới đã hết hạn."
+      password_updater:
+        invalid_token: "Mã không hợp lệ hoặc đã hết hạn"
   invitation_mailer:
     invitation:
       subject: "%{creator_name} đã mời bạn tham gia Hệ thống Báo cháy"
@@ -20,6 +22,14 @@ vi:
       code_notice_html: "Mã mời của bạn là: <strong>%{invitation_code}</strong>"
       expiration_notice: "Mã mời này sẽ hết hạn vào %{expiration_date}."
       thanks: "Cảm ơn bạn!"
+  user_mailer:
+    password_reset:
+      subject: "Hướng dẫn đặt lại mật khẩu cho FireWolf"
+      header: "Đặt lại mật khẩu của bạn, %{user_name}"
+      body_1: "Ai đó đã yêu cầu liên kết để thay đổi mật khẩu của bạn. Bạn có thể thực hiện điều này thông qua liên kết dưới đây."
+      link_text: "Đặt lại mật khẩu của tôi"
+      body_2: "Nếu bạn không yêu cầu điều này, vui lòng bỏ qua email này."
+      body_3: "Mật khẩu của bạn sẽ không thay đổi cho đến khi bạn truy cập liên kết trên và tạo mật khẩu mới."
   api:
     v1:
       authentication:
@@ -32,6 +42,10 @@ vi:
         implemented: "Endpoint này chưa được triển khai."
         refresh:
           success: "Làm mới token thành công."
+        forgot_password:
+          success: "Nếu tài khoản với email này tồn tại, chúng tôi đã gửi liên kết đặt lại mật khẩu."
+        reset_password:
+          success: "Bạn đã đặt lại mật khẩu thành công. Vui lòng đăng nhập."
       base_controller:
         not_authenticated: "Chưa xác thực: %{message}"
         not_authorized: "Bị cấm: %{message}"

@@ -132,7 +132,7 @@ import { BeakerIcon, BellAlertIcon, VideoCameraIcon, ArrowPathIcon, ChartBarIcon
 import { SensorStatus, type AlertWithRelations, type Sensor } from '~/types/api'
 import type { ChartData } from 'chart.js'
 
-definePageMeta({ layout: 'default',middleware: 'auth'})
+definePageMeta({ layout: 'default', middleware: 'auth' })
 
 const api = useApi()
 
@@ -159,13 +159,14 @@ const {
             api.alerts.getRecentPending(5),
             api.sensors.getAll({ limit: 1000, fields: 'id,name,status' }),
         ])
+
         return {
             sensorStats: sensorsStatRes.status === 'fulfilled' ? sensorsStatRes.value : { total: 0, active: 0, inactive: 0, error: 0 },
             alertStats: alertsStatRes.status === 'fulfilled' ? alertsStatRes.value : { pending: 0 },
             cameraStats: camerasStatRes.status === 'fulfilled' ? camerasStatRes.value : { total: 0 },
             avgTemp: avgTempRes.status === 'fulfilled' ? avgTempRes.value.averageTemperature : null,
             recentAlerts: recentAlertsRes.status === 'fulfilled' ? recentAlertsRes.value.data : [],
-            availableSensors: availableSensorsRes.status === 'fulfilled' ? availableSensorsRes.value : [],
+            availableSensors: availableSensorsRes.status === 'fulfilled' ? availableSensorsRes.value.data : [],
         }
     },
     {
@@ -204,12 +205,15 @@ const {
             if (!response || !selectedSensorId.value) return { labels: [], datasets: [] }
             const sensorData = response[selectedSensorId.value]
             if (!sensorData || sensorData.length === 0) return { labels: [], datasets: [] }
+
             const tempData = sensorData
                 .filter(log => log.temperature !== null)
                 .map(log => ({ x: new Date(log.timestamp).valueOf(), y: log.temperature as number }))
+            
             const humidityData = sensorData
                 .filter(log => log.humidity !== null)
                 .map(log => ({ x: new Date(log.timestamp).valueOf(), y: log.humidity as number }))
+            
             return {
                 datasets: [
                     ...(tempData.length > 0

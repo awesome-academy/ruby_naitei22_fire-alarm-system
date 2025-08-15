@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick } from 'vue';
+import { ref, nextTick, computed } from 'vue';
 import { useApi } from '~/composables/useApi';
 import { useAsyncData } from '#app';
 import Swal from 'sweetalert2';
@@ -79,11 +79,12 @@ const deleting = ref(false);
 const showDetailsModal = ref(false);
 const selectedSensorId = ref<string | null>(null);
 
-const { data: sensors, pending, error, refresh } = useAsyncData(
+const { data: paginatedResponse, pending, error, refresh } = useAsyncData(
     'sensors-list',
-    () => api.sensors.getAll(),
+    () => api.sensors.getAll({ fields: 'id,name,status,zone_id' }), 
     { lazy: true, server: false }
 );
+const sensors = computed(() => paginatedResponse.value?.data || []);
 
 const handleDeleteSensor = (sensorId: string) => {
     const sensor = sensors.value?.find((s) => s.id === sensorId);

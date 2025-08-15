@@ -15,6 +15,14 @@ vi:
       invitations:
         create:
           success: "Tạo mã mời thành công."
+      base_controller:
+        success: "Hoạt động thành công."
+      authentication_controller:
+        update_role:
+          success: "Đã cập nhật vai trò người dùng thành công."
+          user_not_found: "Không tìm thấy người dùng."
+          invalid_role: "Vai trò được cung cấp không hợp lệ."
+          cannot_demote_self: "Quản trị viên không thể hạ cấp chính mình."
   services:
     cloudinary:
       upload:

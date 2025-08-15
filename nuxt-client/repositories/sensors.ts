@@ -1,10 +1,11 @@
 import type { $Fetch } from 'ofetch';
-import type { Sensor, SensorWithDetails } from '~/types/api';
+import type { Sensor, SensorWithDetails, PaginatedResponse } from '~/types/api';
 
 export default ($fetch: $Fetch) => ({
     getAll(params: Record<string, any> = {}) {
-        return $fetch<SensorWithDetails[]>('/sensors', { params });
+        return $fetch<PaginatedResponse<SensorWithDetails>>('/sensors', { params });
     },
+
     getById(id: string) {
         return $fetch<SensorWithDetails>(`/sensors/${id}`);
     },

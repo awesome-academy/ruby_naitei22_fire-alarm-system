@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Api::V1::UsersController < Api::V1::BaseController
-  UPDATE_PARAMS_PERMIT = %i(name phone address).freeze
+  UPDATE_PARAMS_PERMIT = %i(name phone address is_active).freeze
 
   before_action :authenticate_request!
   before_action :load_user, only: %i(show update)
@@ -11,12 +11,7 @@ class Api::V1::UsersController < Api::V1::BaseController
   # GET /api/v1/users
   def index
     @pagy, users = pagy(User.all.newest)
-    render json: {
-      users: ActiveModelSerializers::SerializableResource.new(
-        users, each_serializer: UserSerializer
-      ),
-      pagy: pagy_metadata(@pagy)
-    }, status: :ok
+    render_paginated_response(users, UserSerializer, t(".success"))
   end
 
   # GET /api/v1/users/:id
@@ -42,7 +37,8 @@ class Api::V1::UsersController < Api::V1::BaseController
   private
 
   def update_params
-    params.require(:user).permit(UPDATE_PARAMS_PERMIT)
+    permitted_params = params.key?(:user) ? params.require(:user) : params
+    permitted_params.permit(UPDATE_PARAMS_PERMIT)
   end
 
   def load_user
