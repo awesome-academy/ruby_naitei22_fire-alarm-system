@@ -1,7 +1,7 @@
 export enum AlertStatus {
-    PENDING = 'PENDING',
-    RESOLVED = 'RESOLVED',
-    IGNORED = 'IGNORED',
+    PENDING = 'pending',
+    RESOLVED = 'resolved',
+    IGNORED = 'ignored',
 }
 
 export enum SensorStatus {
@@ -21,7 +21,6 @@ export enum AlertOrigin {
 export enum Role {
     ADMIN = 'ADMIN',
     SUPERVISOR = 'SUPERVISOR',
-    USER = 'USER',
 }
 
 export interface Zone {
@@ -124,9 +123,9 @@ export interface Alert {
     userId?: string | null;
     cameraId?: string | null;
     imageUrl?: string | null;
-    createdAt: string | Date;
+    created_at: string | Date;
     status: AlertStatus;
-    viaEmail: boolean;
+    via_email: boolean;
     sensor?: Sensor & { zone?: Zone };
     user?: User;
     camera?: Camera;
@@ -154,9 +153,18 @@ export interface AlertWithDetails extends Alert {
     camera?: Camera & { zone?: Zone };
 }
 
+export interface PagyInfo {
+  current_page: number;
+  next_page: number | null;
+  prev_page: number | null;
+  total_pages: number;
+  total_count: number;
+}
+
 export interface PaginatedResponse<T> {
-    data: T[];
-    total: number;
+  message?: string; 
+  data: T[];
+  pagy: PagyInfo; 
 }
 
 export interface AlertWithRelations extends Alert {

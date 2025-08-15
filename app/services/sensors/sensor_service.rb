@@ -6,7 +6,8 @@ module Sensors
       {
         active: Sensor.active.count,
         inactive: Sensor.inactive.count,
-        faulty: Sensor.error.count
+        error: Sensor.error.count,
+        total: Sensor.count
       }
     end
 
@@ -17,14 +18,15 @@ module Sensors
 
       if missing_ids.any?
         sensor = Sensor.new
-        sensor.errors.add(:base,
-                          I18n.t("api.v1.sensors.bulk.missing_zone",
-                                 ids: missing_ids.join(", ")))
+        sensor.errors.add(
+          :base,
+          I18n.t("api.v1.sensors.bulk.missing_zone",
+                 ids: missing_ids.join(", "))
+        )
         raise ActiveRecord::RecordInvalid, sensor
       end
 
       sensors = sensor_list.map{|sensor_params| Sensor.new(sensor_params)}
-
       Sensor.import sensors, validate: true
       {inserted: sensors.size}
     end

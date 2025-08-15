@@ -37,47 +37,50 @@
                         No alerts available.
                     </td>
                 </tr>
-                <tr v-for="alert in alerts" :key="alert.id" class="hover:bg-gray-800 transition-colors duration-150">
+                <tr
+                    v-for="alert in alerts"
+                    :key="alert.id"
+                    class="hover:bg-gray-800 transition-colors duration-150"
+                >
                     <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-300">
-                        {{ formatDateTime(alert.createdAt) }}
+                        {{ formatDateTime(alert.created_at) }}
                     </td>
                     <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-300">
-                        {{ alert.sensor?.name || 'N/A' }}
-                        <div class="text-xs text-gray-500">{{ alert.sensor?.location }}</div>
+                        {{ (alert.sensor || alert.camera)?.name || 'N/A' }}
                     </td>
                     <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-400">
-                        {{ alert.sensor?.zone?.name || 'N/A' }}
+                        {{ alert.zone?.name || 'N/A' }}
                     </td>
-                    <td class="px-4 py-4 text-sm text-gray-200 max-w-xs truncate" :title="alert.message">
+                    <td
+                        class="px-4 py-4 text-sm text-gray-200 max-w-xs truncate"
+                        :title="alert.message"
+                    >
                         {{ alert.message }}
                     </td>
                     <td class="px-4 py-4 whitespace-nowrap text-center text-sm">
                         <AlertStatusBadge :status="alert.status" />
                     </td>
                     <td class="px-4 py-4 whitespace-nowrap text-center">
-                        <a v-if="alert.imageUrl" :href="alert.imageUrl" target="_blank" title="View image"
-                            class="text-orange-500 hover:text-orange-400">
+                        <a
+                            v-if="alert.image_url"
+                            :href="alert.image_url"
+                            target="_blank"
+                            title="View image"
+                            class="text-orange-500 hover:text-orange-400"
+                        >
                             <PhotoIcon class="h-5 w-5 inline-block" />
                         </a>
                         <span v-else class="text-gray-600">-</span>
                     </td>
                     <td class="px-4 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-            <button @click="$emit('view-details', alert.id)" class="text-orange-500 hover:text-orange-400" title="Xem chi tiết">
-              <EyeIcon class="h-5 w-5 inline-block" />
-            </button>
-            <button
-                v-if="alert.status === AlertStatus.PENDING"
-                @click="$emit('update-status', { id: alert.id, status: AlertStatus.RESOLVED })"
-                class="text-green-500 hover:text-green-400" title="Đánh dấu Đã xử lý">
-              <CheckCircleIcon class="h-5 w-5 inline-block" />
-            </button>
-            <button
-                v-if="alert.status === AlertStatus.PENDING"
-                @click="$emit('update-status', { id: alert.id, status: AlertStatus.IGNORED })"
-                class="text-yellow-500 hover:text-yellow-400" title="Bỏ qua">
-              <ArchiveBoxXMarkIcon class="h-5 w-5 inline-block" />
-            </button>
-          </td>
+                        <button
+                            @click="$emit('view-details', alert.id)"
+                            class="p-1.5 rounded-full text-gray-400 hover:bg-gray-700 hover:text-white transition-colors"
+                            title="View details"
+                        >
+                            <EyeIcon class="h-5 w-5" />
+                        </button>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -90,7 +93,6 @@ import { EyeIcon, PhotoIcon } from '@heroicons/vue/24/outline';
 import type { AlertWithRelations } from '~/types/api';
 import AlertStatusBadge from './AlertStatusBadge.vue';
 import AppSpinner from '~/components/ui/AppSpinner.vue';
-import { AlertStatus } from '~/types/api';
 
 const props = defineProps({
     alerts: {

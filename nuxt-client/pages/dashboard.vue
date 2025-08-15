@@ -91,8 +91,8 @@
             />
 
             <DashboardStatCard
-                title="Avg Temp (24h)"
-                :value="avgTemp !== null ? avgTemp.toFixed(1) + '°C' : 'N/A'"
+                title="Percentage Alerted"
+                :value="percentAlert !== null ? percentAlert.toFixed(1) + '%' : 'N/A'"
                 :icon="ChartBarIcon"
                 icon-color="text-teal-400"
                 icon-bg-color="bg-teal-900/30"
@@ -109,12 +109,14 @@
                 <ChartsLineChart :chart-data="chartData" :loading="chartLoading" height="300px" />
             </div>
 
-            <div class="bg-gray-850 p-4 rounded-lg shadow border border-gray-700 min-h-[350px]">
-                <div class="flex justify-between items-center mb-4">
+            <div class="bg-gray-850 p-4 rounded-lg shadow border border-gray-700 min-h-[350px] flex flex-col">
+                <div class="flex-shrink-0 flex justify-between items-center mb-4">
                     <h3 class="text-lg font-medium text-white">Recent Alerts</h3>
                     <NuxtLink to="/alerts" class="text-sm text-orange-400 hover:underline">View All</NuxtLink>
                 </div>
-                <AlertsRecentAlertsList :alerts="recentAlerts" :loading="recentAlertsLoading" />
+                <div class="flex-1 overflow-y-auto custom-scrollbar pr-1">
+                    <AlertsRecentAlertsList :alerts="recentAlerts" :loading="recentAlertsLoading" />
+                </div>
             </div>
         </div>
     </div>
@@ -132,7 +134,7 @@ import { BeakerIcon, BellAlertIcon, VideoCameraIcon, ArrowPathIcon, ChartBarIcon
 import { SensorStatus, type AlertWithRelations, type Sensor } from '~/types/api'
 import type { ChartData } from 'chart.js'
 
-definePageMeta({ layout: 'default',middleware: 'auth'})
+definePageMeta({ layout: 'default', middleware: 'auth' })
 
 const api = useApi()
 
@@ -148,7 +150,7 @@ const {
             sensorsStatRes,
             alertsStatRes,
             camerasStatRes,
-            avgTempRes,
+            percentAlertRes,
             recentAlertsRes,
             availableSensorsRes,
         ] = await Promise.allSettled([
@@ -159,13 +161,19 @@ const {
             api.alerts.getRecentPending(5),
             api.sensors.getAll({ limit: 1000, fields: 'id,name,status' }),
         ])
+
         return {
             sensorStats: sensorsStatRes.status === 'fulfilled' ? sensorsStatRes.value : { total: 0, active: 0, inactive: 0, error: 0 },
             alertStats: alertsStatRes.status === 'fulfilled' ? alertsStatRes.value : { pending: 0 },
             cameraStats: camerasStatRes.status === 'fulfilled' ? camerasStatRes.value : { total: 0 },
-            avgTemp: avgTempRes.status === 'fulfilled' ? avgTempRes.value.averageTemperature : null,
-            recentAlerts: recentAlertsRes.status === 'fulfilled' ? recentAlertsRes.value.data : [],
-            availableSensors: availableSensorsRes.status === 'fulfilled' ? availableSensorsRes.value : [],
+            percentAlert: percentAlertRes.status === 'fulfilled'
+              && sensorsStatRes.status === 'fulfilled'
+              && camerasStatRes.status === 'fulfilled'
+              && (sensorsStatRes.value.total + camerasStatRes.value.total) > 0
+                ? (alertsStatRes.value.pending * 100 / (sensorsStatRes.value.total + camerasStatRes.value.total))
+                : null,
+            recentAlerts: recentAlertsRes.status === 'fulfilled' ? recentAlertsRes.value.data.slice(0, 5): [],
+            availableSensors: availableSensorsRes.status === 'fulfilled' ? availableSensorsRes.value.data : [],
         }
     },
     {
@@ -177,7 +185,7 @@ const {
 const sensorStats = computed(() => dashboardData.value?.sensorStats ?? { total: 0, active: 0, inactive: 0, error: 0 })
 const alertStats = computed(() => dashboardData.value?.alertStats ?? { pending: 0 })
 const cameraStats = computed(() => dashboardData.value?.cameraStats ?? { total: 0 })
-const avgTemp = computed(() => dashboardData.value?.avgTemp ?? null)
+const percentAlert = computed(() => dashboardData.value?.percentAlert ?? null)
 const recentAlerts = computed(() => dashboardData.value?.recentAlerts ?? [])
 const availableSensors = computed(() => dashboardData.value?.availableSensors ?? [])
 const initialDataLoaded = computed(() => !statsLoading.value && dashboardData.value !== null)
@@ -204,12 +212,15 @@ const {
             if (!response || !selectedSensorId.value) return { labels: [], datasets: [] }
             const sensorData = response[selectedSensorId.value]
             if (!sensorData || sensorData.length === 0) return { labels: [], datasets: [] }
+
             const tempData = sensorData
                 .filter(log => log.temperature !== null)
                 .map(log => ({ x: new Date(log.timestamp).valueOf(), y: log.temperature as number }))
+
             const humidityData = sensorData
                 .filter(log => log.humidity !== null)
                 .map(log => ({ x: new Date(log.timestamp).valueOf(), y: log.humidity as number }))
+
             return {
                 datasets: [
                     ...(tempData.length > 0

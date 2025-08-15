@@ -4,7 +4,7 @@ class Api::V1::SensorLogsController < Api::V1::BaseController
   before_action :set_log, only: [:show, :destroy]
   before_action :validate_sensor_ids, only: [:chart]
   before_action :parse_time_params_before_action, only: [:chart]
-
+  DEFAULT_LOGS_LIMIT = 50
   # GET /logs/stats
   def stats
     stats = SensorLogs::LogService.new.get_stats
@@ -23,8 +23,9 @@ class Api::V1::SensorLogsController < Api::V1::BaseController
 
   # GET /logs
   def index
-    logs = SensorLog.includes(:sensor).all
-    render json: logs, each_serializer: LogSerializer, status: :ok
+    log_scope = SensorLog.includes(:sensor).newest
+    @pagy, logs = pagy(log_scope, items: params[:limit] || DEFAULT_LOGS_LIMIT)
+    render_paginated_response(logs, LogSerializer, t(".success"))
   end
 
   # GET /logs/:id

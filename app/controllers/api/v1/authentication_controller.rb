@@ -7,6 +7,9 @@ class Api::V1::AuthenticationController < Api::V1::BaseController
 
   before_action :authenticate_request!, only: %i(profile update_role)
   before_action :authorize_admin!, only: %i(update_role)
+  before_action :set_user_to_update, only: %i(update_role)
+  skip_before_action :authenticate_request!,
+                     only: %i(forgot_password reset_password), raise: false
 
   # POST /api/v1/auth/signup
   def signup
@@ -53,8 +56,23 @@ class Api::V1::AuthenticationController < Api::V1::BaseController
 
   # PATCH /api/v1/auth/role
   def update_role
-    render json: {message: t("api.v1.authentication.implemented")},
-           status: :not_implemented
+    result = Authentication::RoleUpdaterService.new(
+      user_to_update: @user_to_update,
+      current_user: @current_user,
+      new_role: params[:role]
+    ).call
+
+    if result.success?
+      render_success(
+        {
+          message: t(".success"),
+          user: UserSerializer.new(result.user)
+        },
+        result.status
+      )
+    else
+      render_error(result.errors, result.status)
+    end
   end
 
   # POST /api/v1/auth/refresh
@@ -67,6 +85,29 @@ class Api::V1::AuthenticationController < Api::V1::BaseController
 
     set_auth_cookies(result.tokens)
     render_success({message: t(".success")}, :ok)
+  end
+
+  # POST /api/v1/auth/forgot_password
+  def forgot_password
+    service = Authentication::PasswordResetService.new(email: params[:email])
+    service.call
+    render_success({message: t(".forgot_password.success")}, :ok)
+  end
+
+  # POST /api/v1/auth/reset_password
+  def reset_password
+    service = Authentication::PasswordUpdaterService.new(
+      token: params[:token],
+      password: params[:password],
+      password_confirmation: params[:password_confirmation]
+    )
+    result = service.call
+
+    if result.success?
+      render_success({message: t(".reset_password.success")}, :ok)
+    else
+      render_error(result.errors, :unprocessable_entity)
+    end
   end
 
   private
@@ -102,5 +143,12 @@ class Api::V1::AuthenticationController < Api::V1::BaseController
 
   def render_error errors, status
     render json: {errors:}, status:
+  end
+
+  def set_user_to_update
+    @user_to_update = User.find_by(id: params[:user_id])
+    return if @user_to_update
+
+    render_error(t(".user_not_found"), :not_found)
   end
 end

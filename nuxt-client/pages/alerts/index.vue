@@ -1,21 +1,18 @@
 <template>
   <div>
     <AlertsAlertFilter @filter="applyFilters" />
-
     <div class="mt-6">
       <div v-if="pending && !paginatedResponse" class="text-center py-10">
         <AppSpinner class="inline-block w-8 h-8" />
         <p class="text-gray-400 mt-2">Loading alerts...</p>
       </div>
-      
       <div v-else-if="error" class="error-alert">
         <div class="flex items-center">
           <XCircleIcon class="h-5 w-5 mr-2" />
-          <span>{{ 'An unknown error occurred.' }}</span>
+          <span>An unknown error occurred.</span>
         </div>
         <button @click="() => refresh()" class="text-sm font-medium text-orange-300 hover:underline ml-4">Retry</button>
       </div>
-
       <div v-else>
         <AlertsAlertTable
           :alerts="alerts"
@@ -23,7 +20,6 @@
           @view-details="handleViewDetails"
           @update-status="handleUpdateStatusRequest"
         />
-
         <UiPaginationControls
           v-if="totalAlerts > (queryParams.limit || 10)"
           class="mt-4"
@@ -34,13 +30,6 @@
         />
       </div>
     </div>
-
-    <AlertsAlertDetailsModal
-      :is-open="showDetailsModal"
-      :alert-id="selectedAlertId ?? undefined"
-      @close="closeDetailsModal"
-      @updated="handleAlertUpdated"
-    />
   </div>
 </template>
 
@@ -52,7 +41,6 @@ import { useAsyncData } from '#app';
 import AlertsAlertTable from '~/components/alerts/AlertTable.vue';
 import AlertsAlertFilter from '~/components/alerts/AlertFilter.vue';
 import UiPaginationControls from '~/components/ui/PaginationControls.vue';
-import AlertsAlertDetailsModal from '~/components/alerts/AlertDetailsModal.vue';
 import AppSpinner from '~/components/ui/AppSpinner.vue';
 import { XCircleIcon } from '@heroicons/vue/20/solid';
 import { type AlertStatus } from '~/types/api';
@@ -83,17 +71,17 @@ const queryParams = computed(() => {
 });
 
 const { data: paginatedResponse, pending, error, refresh } = useAsyncData(
-  'alerts-list',
+  'alerts-list-page',
   () => api.alerts.getAll(queryParams.value),
   { 
-  watch: [queryParams],
-  lazy: true,
-  server: false,
+    watch: [queryParams],
+    lazy: true,
+    server: false,
   }
 );
 
 const alerts = computed(() => paginatedResponse.value?.data || []);
-const totalAlerts = computed(() => paginatedResponse.value?.total || 0);
+const totalAlerts = computed(() => paginatedResponse.value?.pagy?.total_count || 0);
 
 const applyFilters = (filters: Record<string, string>) => {
   const newQuery = { ...filters, page: '1' };
@@ -103,6 +91,9 @@ const applyFilters = (filters: Record<string, string>) => {
 const handlePageChange = (newPage: number) => {
   router.push({ query: { ...route.query, page: newPage.toString() } });
 };
+
+const formatDateTime = (dateString?: string | Date) => new Date(dateString || '').toLocaleString('en-US');
+const formatOrigin = (origin?: AlertOrigin) => origin?.replace(/_/g, ' ') || 'Unknown';
 
 const handleUpdateStatusRequest = async (payload: { id: string; status: AlertStatus }) => {
   if (isUpdatingStatus.value) return;
@@ -135,17 +126,57 @@ const handleUpdateStatusRequest = async (payload: { id: string; status: AlertSta
 };
 
 const handleViewDetails = (alertId: string) => {
-  selectedAlertId.value = alertId;
-  showDetailsModal.value = true;
-};
-
-const closeDetailsModal = () => {
-  showDetailsModal.value = false;
-  selectedAlertId.value = null;
-};
-
-const handleAlertUpdated = () => {
-  refresh();
+  Swal.fire({
+    title: 'Loading Alert Details...',
+    html: '<div class="flex justify-center p-4"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div></div>',
+    showConfirmButton: false,
+    background: '#1f2937',
+    customClass: { popup: 'swal2-dark' },
+    allowOutsideClick: false,
+    didOpen: async () => {
+      try {
+        const alert = await api.alerts.getById(alertId);
+        const source = alert.sensor || alert.camera;
+        const contentHtml = `
+          <div class="text-left text-sm space-y-3 p-2">
+            <dl class="space-y-1">
+              <div><dt class="text-gray-400 font-semibold">Message:</dt><dd class="text-gray-200 text-xs bg-gray-900 p-2 rounded whitespace-pre-wrap">${alert.message}</dd></div>
+              <div><dt class="text-gray-400 font-semibold">Time:</dt><dd class="text-gray-200">${formatDateTime(alert.created_at)}</dd></div>
+              <div><dt class="text-gray-400 font-semibold">Zone:</dt><dd class="text-gray-200">${alert.zone?.name || 'N/A'}</dd></div>
+              <div><dt class="text-gray-400 font-semibold">Source:</dt><dd class="text-gray-200">${source?.name || 'N/A'}</dd></div>
+              <div><dt class="text-gray-400 font-semibold">Origin:</dt><dd class="text-gray-200">${formatOrigin(alert.origin)}</dd></div>
+            </dl>
+            ${alert.image_url ? `<img src="${alert.image_url}" class="mt-4 rounded border border-gray-600 w-full">` : ''}
+          </div>`;
+        Swal.update({
+          title: `Alert Details`,
+          html: contentHtml,
+          showConfirmButton: true,
+          confirmButtonText: 'Close',
+          confirmButtonColor: '#4b5563',
+          showDenyButton: alert.status === 'pending',
+          denyButtonText: 'Mark as Resolved',
+          denyButtonColor: '#16a34a',
+          showCancelButton: alert.status === 'pending',
+          cancelButtonText: 'Ignore Alert',
+          cancelButtonColor: '#ca8a04',
+        });
+      } catch (err: any) {
+        Swal.update({
+          icon: 'error',
+          title: 'Error',
+          text: err.data?.message || 'Failed to load details.',
+          showConfirmButton: true,
+        });
+      }
+    }
+  }).then(async (result) => {
+    if (result.isDenied) {
+      await handleUpdateStatusRequest({ id: alertId, status: AlertStatus.RESOLVED });
+    } else if (result.dismiss === Swal.DismissReason.cancel) {
+      await handleUpdateStatusRequest({ id: alertId, status: AlertStatus.IGNORED });
+    }
+  });
 };
 </script>
 

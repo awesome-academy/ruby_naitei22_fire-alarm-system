@@ -7,7 +7,9 @@ Rails.application.routes.draw do
         post :login
         post :logout
         get :profile
-        patch :update_role
+        patch :role, action: :update_role
+        post :forgot_password
+        post :reset_password
         post :refresh
       end
       resources :zones, only: %i(index show create update destroy)

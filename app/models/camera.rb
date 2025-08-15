@@ -5,7 +5,7 @@ class Camera < ApplicationRecord
   VALID_STATUSES = %w(online offline recording error).freeze
   enum status: {online: 0, offline: 1, recording: 2, error: 3}
   after_initialize :set_default_status, if: :new_record?
-  belongs_to :zone
+  belongs_to :zone, counter_cache: true
   has_many :alerts, as: :owner, dependent: :nullify
 
   scope :newest, ->{order(created_at: :desc)}

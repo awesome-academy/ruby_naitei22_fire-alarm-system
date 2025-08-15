@@ -52,13 +52,13 @@
                         <span v-else>-</span>
                     </td>
                     <td class="px-4 py-4 whitespace-nowrap text-center text-sm text-gray-300">
-                        {{ zone.sensors?.length ?? 0 }}
+                        {{ zone.sensors_count ?? 0 }}
                     </td>
                     <td class="px-4 py-4 whitespace-nowrap text-center text-sm text-gray-300">
-                        {{ zone.cameras?.length ?? 0 }}
+                        {{ zone.cameras_count ?? 0 }}
                     </td>
                     <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-400">
-                        {{ formatDateTime(zone.createdAt) }}
+                        {{ formatDateTime(zone.created_at) }}
                     </td>
                     <td class="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <button @click="$emit('edit', zone)" class="text-blue-500 hover:text-blue-400 mr-3" title="Edit">

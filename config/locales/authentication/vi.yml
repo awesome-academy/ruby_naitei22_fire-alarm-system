@@ -2,42 +2,62 @@ vi:
   services:
     authentication:
       login:
-        invalid_credentials: "Email hoặc mật khẩu không chính xác."
+        invalid_credentials: "Email hoặc mật khẩu không hợp lệ."
         not_active: "Tài khoản của bạn chưa được kích hoạt."
       signup:
-        invalid_invitation: "Mã mời không hợp lệ, đã hết hạn hoặc đã được sử dụng."
+        invalid_invitation: "Mã mời không hợp lệ, đã hết hạn, hoặc đã được sử dụng."
       refresh_token:
-        invalid_token: "Mã làm mới không hợp lệ."
-        token_expired: "Mã làm mới đã hết hạn."
+        invalid_token: "Refresh token không hợp lệ."
+        token_expired: "Refresh token đã hết hạn."
+      password_updater:
+        invalid_token: "Token không hợp lệ hoặc đã hết hạn."
+      password_reset:
+        generic_error: "Đã xảy ra lỗi không mong muốn khi cố gắng đặt lại mật khẩu. Vui lòng thử lại."
   invitation_mailer:
     invitation:
-      subject: "%{creator_name} đã mời bạn tham gia Hệ thống Báo cháy"
+      subject: "%{creator_name} đã mời bạn tham gia Hệ thống Cảnh báo Cháy"
       header: "Bạn đã được mời!"
       greeting: "Chào bạn"
-      body_html: "<strong>%{creator_name}</strong> đã mời bạn tham gia Hệ thống Báo cháy."
-      instruction: "Để chấp nhận lời mời và tạo tài khoản của bạn, vui lòng nhấp vào liên kết dưới đây:"
+      body_html: "<strong>%{creator_name}</strong> đã mời bạn tham gia Hệ thống Cảnh báo Cháy."
+      instruction: "Để chấp nhận lời mời và tạo tài khoản, vui lòng nhấp vào liên kết bên dưới:"
       link_text: "Tạo tài khoản của tôi"
       code_notice_html: "Mã mời của bạn là: <strong>%{invitation_code}</strong>"
-      expiration_notice: "Mã mời này sẽ hết hạn vào %{expiration_date}."
-      thanks: "Cảm ơn bạn!"
+      expiration_notice: "Lời mời này sẽ hết hạn vào ngày %{expiration_date}."
+      thanks: "Cảm ơn!"
+  user_mailer:
+    password_reset:
+      subject: "Hướng dẫn Đặt lại Mật khẩu cho FireWolf"
+      header: "Đặt lại mật khẩu của bạn, %{user_name}"
+      body_1: "Ai đó đã yêu cầu một liên kết để thay đổi mật khẩu của bạn. Bạn có thể làm điều này qua liên kết bên dưới."
+      link_text: "Đặt lại mật khẩu của tôi"
+      body_2: "Nếu bạn không yêu cầu điều này, vui lòng bỏ qua email này."
+      body_3: "Mật khẩu của bạn sẽ không thay đổi cho đến khi bạn truy cập liên kết trên và tạo một mật khẩu mới."
   api:
     v1:
       authentication:
         login:
           success: "Đăng nhập thành công."
         signup:
-          success: "Đăng ký thành công. Bạn đã được tự động đăng nhập."
+          success: "Đăng ký thành công. Bạn hiện đã đăng nhập."
         logout:
           success: "Đăng xuất thành công."
-        implemented: "Endpoint này chưa được triển khai."
+        implemented: "Chức năng này chưa được thực hiện."
         refresh:
-          success: "Làm mới token thành công."
+          success: "Token đã được làm mới thành công."
+        update_role:
+          success: "Vai trò người dùng đã được cập nhật thành công."
+          user_not_found: "Không tìm thấy người dùng."
+        forgot_password:
+          success: "Nếu một tài khoản với email này tồn tại, chúng tôi đã gửi một liên kết đặt lại mật khẩu."
+        reset_password:
+          success: "Mật khẩu của bạn đã được đặt lại thành công. Vui lòng đăng nhập."
       base_controller:
         not_authenticated: "Chưa xác thực: %{message}"
         not_authorized: "Bị cấm: %{message}"
         errors:
-          missing_token: "Thiếu mã thông báo truy cập."
-          token_expired: "Mã thông báo truy cập đã hết hạn."
+          missing_token: "Thiếu access token."
+          token_expired: "Access token đã hết hạn."
           invalid_token: "Token không hợp lệ: %{error}"
-          auth_failed: "Xác thực không thành công."
+          auth_failed: "Xác thực thất bại."
           admins_only: "Hành động này chỉ dành cho quản trị viên."
+          

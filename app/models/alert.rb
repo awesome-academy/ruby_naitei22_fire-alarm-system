@@ -2,6 +2,7 @@ class Alert < ApplicationRecord
   ALERT_PERMIT = %i(
     message origin status via_email owner_id owner_type zone_id
   ).freeze
+  ALERTS_PRELOAD = %i(user zone owner).freeze
 
   enum status: {pending: 0, resolved: 1, ignored: 2}
   enum origin: {sensor_threshold: 0, sensor_error: 1, ml_detection: 2,

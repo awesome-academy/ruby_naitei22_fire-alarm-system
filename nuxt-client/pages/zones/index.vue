@@ -77,11 +77,13 @@ definePageMeta({
 
 const api = useApi();
 
-const { data: zones, pending, error, refresh } = useAsyncData(
+const { data: paginatedResponse, pending, error, refresh } = useAsyncData(
     'zones-list',
     () => api.zones.getAll(),
     { lazy: true, server: false }
 );
+
+const zones = computed(() => paginatedResponse.value?.data || []);
 
 const actionError = ref<string | null>(null);
 

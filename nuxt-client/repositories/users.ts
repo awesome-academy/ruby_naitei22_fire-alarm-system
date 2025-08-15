@@ -1,9 +1,9 @@
 import type { $Fetch } from 'ofetch';
-import type { User } from '~/types/api';
+import type { User, PaginatedResponse, Role } from '~/types/api';
 
 export default ($fetch: $Fetch) => ({
     getAll() {
-        return $fetch<User[]>('/users', {
+        return $fetch<PaginatedResponse<User>>('/users', {
             method: 'GET',
         });
     },
@@ -17,7 +17,7 @@ export default ($fetch: $Fetch) => ({
     update(id: string, data: Partial<User>) {
         return $fetch<User>(`/users/${id}`, {
             method: 'PATCH',
-            body: data,
+            body: { user: data },
         });
     },
 });

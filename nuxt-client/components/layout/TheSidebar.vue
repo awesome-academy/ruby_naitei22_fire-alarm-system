@@ -81,13 +81,11 @@ const isAdmin = ref(true);
 
 const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: ChartBarIcon },
-    { name: 'Alerts', href: '/alerts', icon: BellAlertIcon, activePath: '/alerts' },
     { name: 'Map', href: '/map', icon: MapIcon },
-    { name: 'Cameras', href: '/cameras', icon: VideoCameraIcon, activePath: '/cameras' }
 ];
 
 const adminNavigation = [
-    { name: 'Manage Alerts', href: '/alerts', icon: FolderIcon, activePath: '/alerts' },
+    { name: 'Manage Alerts', href: '/alerts', icon: BellAlertIcon, activePath: '/alerts' },
     { name: 'Manage Sensors', href: '/sensors', icon: Cog6ToothIcon },
     { name: 'Manage Cameras', href: '/cameras', icon: VideoCameraIcon },
     { name: 'Manage Zones', href: '/zones', icon: MapPinIcon },
