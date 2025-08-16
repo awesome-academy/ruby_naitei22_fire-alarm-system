@@ -1,5 +1,5 @@
 import type { $Fetch } from 'ofetch';
-
+import type { User, PaginatedResponse, Role } from '~/types/api';
 interface LoginCredentials {
     email: string;
     password: string;
@@ -10,6 +10,7 @@ interface SignupData {
     email: string;
     password: string;
     phone?: string;
+    invitation_code: string;
 }
 
 interface AuthUser {
@@ -17,6 +18,16 @@ interface AuthUser {
     name: string;
     email: string;
     role: string;
+}
+
+interface ForgotPasswordPayload {
+    email: string;
+}
+
+interface ResetPasswordPayload {
+    token: string;
+    password: string;
+    password_confirmation: string;
 }
 
 export default ($fetch: $Fetch) => ({
@@ -30,7 +41,7 @@ export default ($fetch: $Fetch) => ({
     signup(data: SignupData) {
         return $fetch<{ message: string }>('/auth/signup', {
             method: 'POST',
-            body: data,
+            body: { auth: data },
         });
     },
 
@@ -47,10 +58,24 @@ export default ($fetch: $Fetch) => ({
         });
     },
 
-    updateUserRole(userId: string, role: string) {
-        return $fetch('/auth/rule', {
+    updateUserRole(userId: string, role: Role) {
+        return $fetch<User>('/auth/role', { 
             method: 'PATCH',
-            body: { userId, role },
+            body: { user_id: userId, role: role.toLowerCase() }
+        });
+    },
+
+    forgotPassword(payload: ForgotPasswordPayload) {
+        return $fetch<{ message: string }>('/auth/forgot_password', {
+            method: 'POST',
+            body: payload,
+        });
+    },
+
+    resetPassword(payload: ResetPasswordPayload) {
+        return $fetch<{ message: string }>('/auth/reset_password', {
+            method: 'POST',
+            body: payload,
         });
     },
 });

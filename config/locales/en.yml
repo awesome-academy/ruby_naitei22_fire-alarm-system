@@ -15,6 +15,14 @@ en:
       invitations:
         create:
           success: "Invitation code created successfully."
+      base_controller:
+        success: "Operation was successful."
+      authentication_controller:
+        update_role:
+          success: "User role updated successfully."
+          user_not_found: "User not found."
+          invalid_role: "The provided role is invalid."
+          cannot_demote_self: "Admins cannot demote themselves."
   services:
     cloudinary:
       upload:

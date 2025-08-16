@@ -7,7 +7,7 @@
         <div v-else-if="error" class="error-alert mb-6">
             <div class="flex items-center">
                 <XCircleIcon class="h-5 w-5 text-red-400 mr-2 flex-shrink-0" />
-                <span>{{ 'Failed to load profile.' }}</span>
+                <span>Failed to load profile.</span>
             </div>
             <button @click="() => refresh()" class="ml-auto text-sm font-medium text-orange-400 hover:underline">Retry</button>
         </div>
@@ -20,12 +20,26 @@
                     <p class="text-xs text-gray-500 mt-1">Role: <span class="font-medium text-gray-300">{{ profileData.role }}</span></p>
                 </div>
             </div>
-            <Transition enter-active-class="transition ease-out duration-200" enter-from-class="opacity-0" enter-to-class="opacity-100" leave-active-class="transition ease-in duration-150" leave-from-class="opacity-100" leave-to-class="opacity-0">
+            <Transition
+                enter-active-class="transition ease-out duration-200"
+                enter-from-class="opacity-0"
+                enter-to-class="opacity-100"
+                leave-active-class="transition ease-in duration-150"
+                leave-from-class="opacity-100"
+                leave-to-class="opacity-0"
+            >
                 <div v-if="updateError" class="error-alert">
                     <XCircleIcon class="h-5 w-5 mr-2" /> {{ updateError }}
                 </div>
             </Transition>
-            <Transition enter-active-class="transition ease-out duration-200" enter-from-class="opacity-0" enter-to-class="opacity-100" leave-active-class="transition ease-in duration-150" leave-from-class="opacity-100" leave-to-class="opacity-0">
+            <Transition
+                enter-active-class="transition ease-out duration-200"
+                enter-from-class="opacity-0"
+                enter-to-class="opacity-100"
+                leave-active-class="transition ease-in duration-150"
+                leave-from-class="opacity-100"
+                leave-to-class="opacity-0"
+            >
                 <div v-if="updateSuccess" class="success-alert">
                     <CheckCircleIcon class="h-5 w-5 mr-2" /> Profile updated successfully!
                 </div>
@@ -45,7 +59,11 @@
                         <textarea id="profile-address" v-model="editableProfile.address" rows="4" class="input-field mt-1"></textarea>
                     </div>
                     <div class="flex justify-end pt-4">
-                        <button type="submit" :disabled="isSubmitting || !isProfileChanged" class="inline-flex items-center px-6 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-orange-800/50 disabled:cursor-not-allowed border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-orange-500">
+                        <button
+                            type="submit"
+                            :disabled="isSubmitting || !isProfileChanged"
+                            class="inline-flex items-center px-6 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-orange-800/50 disabled:cursor-not-allowed border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-orange-500"
+                        >
                             <AppSpinner v-if="isSubmitting" class="w-4 h-4 mr-2" />
                             Save Changes
                         </button>
@@ -85,10 +103,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useApi } from '~/composables/useApi';
 import { useAuth } from '~/composables/useAuth';
-import { useAsyncData } from '#app';
 import type { User } from '~/types/api';
 import AppSpinner from '~/components/ui/AppSpinner.vue';
 import { XCircleIcon, CheckCircleIcon } from '@heroicons/vue/20/solid';
@@ -101,44 +118,32 @@ definePageMeta({
 const api = useApi();
 const { user: authUser, fetchUser: refetchAuthUser } = useAuth();
 
-const editableProfile = reactive({
-    name: '',
-    phone: '',
-    address: '' as string | null | undefined,
-});
+const editableProfile = ref<Partial<User>>({});
 const isSubmitting = ref(false);
 const updateError = ref<string | null>(null);
 const updateSuccess = ref(false);
+const pending = ref(false);
+const profileData = computed(() => authUser.value);
 
-const { data: profileData, pending, error, refresh } = useAsyncData(
-    'user-profile-details',
-    () => {
-        if (!authUser.value?.id) {
-            throw new Error("User not authenticated.");
-        }
-        return api.users.getById(authUser.value.id);
-    },
-    {
-        watch: [() => authUser.value?.id],
-        server: false,
-        lazy: true,
+const syncProfileForm = () => {
+    if (profileData.value) {
+        editableProfile.value = {
+            name: profileData.value.name || '',
+            phone: profileData.value.phone || '',
+            address: profileData.value.address || null,
+        };
     }
-);
+};
 
-watch(profileData, (newData) => {
-    if (newData) {
-        editableProfile.name = newData.name || '';
-        editableProfile.phone = newData.phone || '';
-        editableProfile.address = newData.address || null;
-    }
-}, { immediate: true });
+onMounted(syncProfileForm);
+watch(profileData, syncProfileForm, { immediate: true });
 
 const isProfileChanged = computed(() => {
     if (!profileData.value) return false;
     return (
-        profileData.value.name !== editableProfile.name ||
-        profileData.value.phone !== editableProfile.phone ||
-        (profileData.value.address || null) !== (editableProfile.address || null)
+        profileData.value.name !== editableProfile.value.name ||
+        profileData.value.phone !== editableProfile.value.phone ||
+        (profileData.value.address || null) !== (editableProfile.value.address || null)
     );
 });
 
@@ -149,12 +154,11 @@ const handleUpdateProfile = async () => {
     updateSuccess.value = false;
     try {
         const dataToUpdate: Partial<User> = {
-            name: editableProfile.name?.trim(),
-            phone: editableProfile.phone?.trim(),
-            address: editableProfile.address?.trim() || null,
+            name: editableProfile.value.name?.trim(),
+            phone: editableProfile.value.phone?.trim(),
+            address: editableProfile.value.address?.trim() || null,
         };
         await api.users.update(authUser.value.id, dataToUpdate);
-        await refresh();
         await refetchAuthUser();
         updateSuccess.value = true;
         setTimeout(() => (updateSuccess.value = false), 3000);
@@ -171,7 +175,13 @@ const avatarUrl = computed(() => defaultAvatarUrl);
 const formatDateTime = (dateTimeString: string | Date | undefined | null): string => {
     if (!dateTimeString) return 'N/A';
     try {
-        return new Date(dateTimeString).toLocaleString('en-US', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        return new Date(dateTimeString).toLocaleString('en-US', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
     } catch {
         return "Invalid Date";
     }
@@ -214,7 +224,8 @@ const formatDateTime = (dateTimeString: string | Date | undefined | null): strin
     box-shadow: var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color);
     border-color: #f97316;
 }
-.error-alert, .success-alert {
+.error-alert,
+.success-alert {
     display: flex;
     align-items: center;
     padding: 0.75rem;

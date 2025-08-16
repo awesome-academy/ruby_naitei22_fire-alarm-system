@@ -8,7 +8,6 @@
                     <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">URL</th>
                     <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
                     <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider">Fire Detection</th>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Coordinates</th>
                     <th scope="col" class="relative px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
@@ -35,16 +34,20 @@
                             {{ cam.isDetecting ? 'Enabled' : 'Disabled' }}
                         </span>
                     </td>
-                    <td class="px-4 py-3 whitespace-nowrap text-xs text-gray-500">
-                        <span v-if="cam.latitude != null && cam.longitude != null">{{ cam.latitude.toFixed(4) }}, {{ cam.longitude.toFixed(4) }}</span>
-                        <span v-else>-</span>
-                    </td>
                     <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                        <NuxtLink :to="`/cameras/config?edit=${cam.id}`" class="p-1 text-blue-400 hover:text-blue-300" title="Edit">
-                            <PencilSquareIcon class="h-4 w-4" />
+                        <NuxtLink
+                            :to="`/cameras/config?edit=${cam.id}`"
+                            class="inline-flex items-center justify-center h-8 w-8 rounded-full text-blue-400 hover:bg-gray-700 hover:text-blue-300 transition-colors"
+                            title="Edit"
+                        >
+                            <PencilSquareIcon class="h-5 w-5" />
                         </NuxtLink>
-                        <button @click="$emit('delete', cam)" class="p-1 text-red-500 hover:text-red-400" title="Delete">
-                            <TrashIcon class="h-4 w-4" />
+                        <button
+                            @click="$emit('delete', cam)"
+                            class="inline-flex items-center justify-center h-8 w-8 rounded-full text-red-500 hover:bg-gray-700 hover:text-red-400 transition-colors"
+                            title="Delete"
+                        >
+                            <TrashIcon class="h-5 w-5" />
                         </button>
                     </td>
                 </tr>

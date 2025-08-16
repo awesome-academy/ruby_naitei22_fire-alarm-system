@@ -28,12 +28,15 @@
             <SensorsSensorStatusBadge :status="sensor.status" />
           </td>
           <td class="px-3 py-2 whitespace-nowrap text-sm text-center" :class="getTempColor(sensor.latestLog?.temperature, sensor.threshold)">
-            {{ sensor.latestLog?.temperature?.toFixed(1) ?? '-' }}<span v-if="sensor.latestLog?.temperature !== null">°C</span>
+            <span v-if="sensor.latestLog?.temperature != null">{{ sensor.latestLog.temperature.toFixed(1) }}°C</span>
+             <span v-else class="text-gray-500">-°C</span>
           </td>
           <td class="px-3 py-2 whitespace-nowrap text-sm text-center text-gray-300">
-            {{ sensor.latestLog?.humidity?.toFixed(0) ?? '-' }}<span v-if="sensor.latestLog?.humidity !== null">%</span>
+            <span v-if="sensor.latestLog?.humidity != null">{{ sensor.latestLog.humidity.toFixed(1) }}%</span>
+              <span v-else class="text-gray-500">-%</span>
           </td>
-          <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-500">{{ formatDateTimeShort(sensor.latestLog?.createdAt) }}</td>
+          <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-500"><span v-if="sensor.latestLog?.createdAt">{{ formatDistanceToNow(new Date(sensor.latestLog.createdAt), { addSuffix: true }) }}</span>
+        <span v-else class="text-gray-500">N/A</span></td>
         </tr>
       </tbody>
     </table>

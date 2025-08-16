@@ -47,20 +47,9 @@ class Api::V1::SensorsController < Api::V1::BaseController
     sensor_scope = Sensors::SensorService.new.find_all(
       params.permit(Sensor::SENSOR_INDEX_PERMITTED)
     )
-
     @pagy, sensors = pagy(sensor_scope,
                           items: params[:limit] || Settings.digits.digit_20)
-
-    render_success(
-      {
-        message: t(".success"),
-        sensors: ActiveModelSerializers::SerializableResource.new(
-          sensors, each_serializer: SensorSerializer
-        ),
-        pagy: pagy_metadata(@pagy)
-      },
-      :ok
-    )
+    render_paginated_response(sensors, SensorSerializer, t(".success"))
   end
 
   # GET /api/sensors/:id

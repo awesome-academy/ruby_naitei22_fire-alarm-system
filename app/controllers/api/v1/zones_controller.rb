@@ -4,68 +4,51 @@ class Api::V1::ZonesController < Api::V1::BaseController
 
   # GET /api/v1/zones
   def index
-    @zones = if params[:sort] == "name"
-               Zone.sorted_by_name
-             else
-               Zone.all
-             end
+    zones_scope = Zone.filter_and_sort(params)
 
-    render json: {
-      message: t("zones.index.success"),
-      data: @zones.as_json(include: [:cameras, :sensors])
-    }
+    @pagy, zones = pagy(zones_scope)
+    render_paginated_response(zones, ZoneSerializer, t(".success"))
   end
 
   # GET /api/v1/zones/:id
   def show
-    render json: {
-      message: t("zones.show.success"),
-      data: @zone.as_json(include: [:cameras, :sensors])
-    }
+    render_success({
+                     message: t(".success"),
+                     data: ZoneSerializer.new(@zone)
+                   }, :ok)
   end
 
   # POST /api/v1/zones
   def create
     @zone = Zone.new(zone_params)
     if @zone.save
-      render json: {
-        message: t("zones.create.success"),
-        data: @zone
-      }, status: :created
+      render_success({
+                       message: t(".success"),
+                       data: ZoneSerializer.new(@zone)
+                     }, :created)
     else
-      render json: {
-        message: t("zones.create.failure"),
-        data: @zone.errors.full_messages
-      }, status: :unprocessable_entity
+      render_error(@zone.errors.full_messages, :unprocessable_entity)
     end
   end
 
   # PUT/PATCH /api/v1/zones/:id
   def update
     if @zone.update(zone_params)
-      render json: {
-        message: t("zones.update.success"),
-        data: @zone
-      }
+      render_success({
+                       message: t(".success"),
+                       data: ZoneSerializer.new(@zone)
+                     }, :ok)
     else
-      render json: {
-        message: t("zones.update.failure"),
-        data: @zone.errors.full_messages
-      }, status: :unprocessable_entity
+      render_error(@zone.errors.full_messages, :unprocessable_entity)
     end
   end
 
+  # DELETE /api/v1/zones/:id
   def destroy
     if @zone.destroy
-      render json: {
-        message: t("zones.destroy.success"),
-        data: @zone
-      }, status: :ok
+      render_success({message: t(".success")}, :ok)
     else
-      render json: {
-        message: t("zones.destroy.failure"),
-        data: @zone.errors.full_messages
-      }, status: :unprocessable_entity
+      render_error(@zone.errors.full_messages, :unprocessable_entity)
     end
   end
 
@@ -73,16 +56,12 @@ class Api::V1::ZonesController < Api::V1::BaseController
 
   def set_zone
     @zone = Zone.find_by(id: params[:id])
-
     return if @zone
 
-    render json: {
-      message: t("zones.errors.not_found"),
-      data: nil
-    }, status: :not_found
+    render_error(t("zones.errors.not_found"), :not_found)
   end
 
   def zone_params
-    params.require(:zone).permit(*PERMIT)
+    params.require(:zone).permit(*PERMIT).merge(user_id: current_user.id)
   end
 end

@@ -88,8 +88,10 @@ class Api::V1::BaseController < ApplicationController
     }
   end
 
-  def render_paginated_response records, serializer
+  def render_paginated_response records, serializer, message =
+  t("api.v1.base_controller.success")
     render json: {
+      message:,
       data: ActiveModelSerializers::SerializableResource.new(
         records,
         each_serializer: serializer

@@ -7,6 +7,7 @@ class SensorLog < ApplicationRecord
   validates :temperature, numericality: true, allow_nil: true
   validates :humidity, numericality: true, allow_nil: true
 
+  scope :newest, ->{order(created_at: :desc)}
   scope :recent_hours, ->(hours){where("created_at >= ?", hours.hours.ago)}
   scope :with_temperature, ->{where.not(temperature: nil)}
   scope :by_sensor_ids, ->(sensor_ids){where(sensor_id: sensor_ids)}

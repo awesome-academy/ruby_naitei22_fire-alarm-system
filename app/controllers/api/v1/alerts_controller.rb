@@ -1,20 +1,20 @@
 # frozen_string_literal: true
 
 class Api::V1::AlertsController < Api::V1::BaseController
-  ALERTS_PRELOAD = %i(user zone owner).freeze
   before_action :authenticate_request!
   before_action :authorize_admin!, only: %i(index show create stats)
   before_action :set_alert, only: %i(show update_status)
 
   # GET /api/v1/alerts
   def index
-    alerts = Alert.includes(ALERTS_PRELOAD)
-                  .with_status(params[:status])
-                  .in_date_range(params[:start_date], params[:end_date])
-                  .newest
+    alerts_scope = Alert.with_attached_snapshot
+                        .includes(:user, :zone, owner: [:zone])
+                        .with_status(params[:status])
+                        .in_date_range(params[:start_date], params[:end_date])
+                        .newest
 
-    @pagy, alerts = pagy(alerts)
-    render_paginated_response(alerts, AlertSerializer)
+    @pagy, alerts = pagy(alerts_scope)
+    render_paginated_response(alerts, AlertSerializer, t(".success"))
   end
 
   # GET /api/v1/alerts/stats
