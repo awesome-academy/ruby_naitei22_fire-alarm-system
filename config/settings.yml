@@ -1,3 +1,5 @@
 digits:
   digit_20: 20
   digit_1: 1
+
+weatherapi_url: "https://api.weatherapi.com/v1/current.json"

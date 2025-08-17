@@ -2,3 +2,8 @@ scan_cameras_job:
   cron: "*/60 * * * *"
   class: "Detections::ProcessAllCamerasJob"
   queue: "default"
+
+weather_api_simulation:
+  cron: "*/5 * * * *"
+  class: "SensorLogs::WeatherApiSimulationJob"
+  queue: "default"

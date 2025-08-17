@@ -8,4 +8,15 @@ class AlertMailer < ApplicationMailer
 
     mail(to: recipient.email, subject: t(".subject"))
   end
+
+  def sensor_threshold_alert
+    @alert = params[:alert]
+    @sensor = @alert.owner
+    @zone = @sensor.zone
+
+    mail(
+      to: params[:email],
+      subject: t(".subject")
+    )
+  end
 end

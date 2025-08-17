@@ -48,6 +48,8 @@ def create_zones_and_sensors_and_cameras_with_faker
     zone = Zone.find_or_create_by!(name: "Khu vực #{('A'..'Z').to_a[i]}") do |z|
       z.description = Faker::Lorem.sentence(word_count: 10)
       z.city = Faker::Address.city
+      z.latitude = Faker::Address.latitude
+      z.longitude = Faker::Address.longitude
       z.user = @supervisors.sample
     end
 

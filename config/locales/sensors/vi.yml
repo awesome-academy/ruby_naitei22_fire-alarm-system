@@ -27,3 +27,15 @@ vi:
           success: "Thống kê trong %{hours} giờ qua được lấy thành công."
   errors:
     invalid_time_format: "Thời gian không hợp lệ: %{message}"
+  weather_api_simulation:
+    missing_api_key: "Thiếu WEATHERAPI_API_KEY. Bỏ qua mô phỏng."
+    no_zones_found: "Không tìm thấy khu vực nào đủ điều kiện cho mô phỏng thời tiết."
+    processing_zone: "Đang xử lý khu vực %{zone_id} với vị trí: %{location}"
+    missing_weather_data: "Thiếu dữ liệu thời tiết cho khu vực %{zone_id}. Bỏ qua."
+    json_parse_error: "Không thể phân tích JSON từ API thời tiết: %{error}"
+    network_error: "Lỗi mạng khi lấy dữ liệu thời tiết: %{error}"
+    api_error: "Lỗi API không mong đợi: %{error}"
+    unexpected_error: "Lỗi không mong đợi trong mô phỏng thời tiết: %{error}"
+    log_created: "SensorLog đã được tạo với ID %{log_id} cho cảm biến %{sensor_id}"
+    sensor_log_error: "Không thể tạo SensorLog cho cảm biến %{sensor_id}: %{error}"
+    temp_exceeds: "Nhiệt độ %{temp}°C vượt quá ngưỡng %{threshold}°C"

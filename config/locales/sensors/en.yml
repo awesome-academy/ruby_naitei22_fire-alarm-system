@@ -27,3 +27,15 @@ en:
           success: "Statistics for the past %{hours} hours retrieved successfully."
   errors:
     invalid_time_format: "Invalid time format: %{message}"
+  weather_api_simulation:
+    missing_api_key: "Missing WEATHERAPI_API_KEY. Simulation skipped."
+    no_zones_found: "No eligible zones found for weather simulation."
+    processing_zone: "Processing zone %{zone_id} with location: %{location}"
+    missing_weather_data: "Missing weather data for zone %{zone_id}. Skipping."
+    json_parse_error: "Failed to parse weather API JSON: %{error}"
+    network_error: "Network error while fetching weather data: %{error}"
+    api_error: "Unexpected API error: %{error}"
+    unexpected_error: "Unexpected error in weather simulation: %{error}"
+    log_created: "SensorLog created with ID %{log_id} for sensor %{sensor_id}"
+    sensor_log_error: "Failed to create SensorLog for sensor %{sensor_id}: %{error}"
+    temp_exceeds: "Temperature %{temp}°C exceeds threshold %{threshold}°C"

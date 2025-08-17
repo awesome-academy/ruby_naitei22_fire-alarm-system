@@ -1,0 +1,15 @@
+<h1><%= t(".header") %></h1>
+
+<p>
+  <%= t(".intro_html", sensor_name: @sensor.name, zone_name: @zone.name) %>
+</p>
+
+<ul>
+  <li><strong><%= t(".content_label") %>:</strong> <%= @alert.message %></li>
+  <li><strong><%= t(".time_label") %>:</strong> <%= l(@alert.created_at, format: :long) %></li>
+  <li><strong><%= t(".threshold_label") %>:</strong> <%= @sensor.threshold %>°C</li>
+</ul>
+
+<p><%= t(".call_to_action") %></p>
+
+<p><%= t(".thank_you") %></p>

@@ -29,3 +29,17 @@ en:
       snapshot_header: "Image from camera"
       call_to_action: "Please log in to the system to handle it."
       thank_you: "Thank you."
+    sensor_threshold_alert:
+      subject: "🔥 [Sensor Warning] Temperature threshold exceeded!"
+      header: "🔥 Sensor Alert!"
+      intro_html: "The sensor <strong>%{sensor_name}</strong> in zone <strong>%{zone_name}</strong> has exceeded its temperature threshold."
+      content_label: "Alert Message"
+      threshold_label: "Threshold"
+      time_label: "Time"
+      call_to_action: "Please log in to the system to investigate."
+      thank_you: "Thank you for your attention."
+  alerts:
+    temperature_exceeded: "Sensor %{sensor_name} at %{location} exceeded threshold %{threshold}°C, current: %{temperature}°C"
+    email:
+      supervisor_inactive: "Supervisor %{name} (email: %{email}) is inactive — skipping email."
+      admin_inactive: "Admin %{name} (email: %{email}) is inactive — skipping email."
