@@ -9,13 +9,7 @@ class Api::V1::CamerasController < Api::V1::BaseController
   # GET /api/v1/cameras
   def index
     @pagy, cameras = pagy(Camera.includes(:zone).newest)
-    render json: {
-      cameras: ActiveModelSerializers::SerializableResource.new(
-        cameras,
-        each_serializer: CameraSerializer
-      ),
-      pagy: pagy_metadata(@pagy)
-    }, status: :ok
+    render_paginated_response(cameras, CameraSerializer, t(".success"))
   end
 
   # GET /api/v1/cameras/stats

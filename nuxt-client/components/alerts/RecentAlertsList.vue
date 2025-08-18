@@ -15,7 +15,7 @@
                             {{ alert.message }}
                         </p>
                         <p class="text-xs text-gray-400 truncate">
-                            {{ alert.sensor?.name ?? 'N/A' }} - {{ formatDateTime(alert.createdAt) }}
+                            {{ alert.origin ?? 'N/A' }} - {{ formatDateTime(alert.created_at) }}
                         </p>
                     </div>
                     <div class="flex-shrink-0">

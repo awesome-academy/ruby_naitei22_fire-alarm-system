@@ -50,9 +50,12 @@
                     <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-600 bg-gray-700 rounded" />
                     <label for="remember-me" class="ml-2 block text-sm text-gray-400"> Remember me </label>
                 </div>
-                <div class="text-sm">
-                    <a href="#" class="font-medium text-orange-500 hover:text-orange-400"> Forgot password? </a>
-                </div>
+                <NuxtLink
+                    to="/forgot-password"
+                    class="font-medium text-orange-500 hover:text-orange-400"
+                >
+                    Forgot password?
+                </NuxtLink>
             </div>
 
             <div>

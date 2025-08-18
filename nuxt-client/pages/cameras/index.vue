@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick } from 'vue';
+import { ref, nextTick, computed } from 'vue';
 import { navigateTo, useAsyncData } from '#app';
 import { useApi } from '~/composables/useApi';
 import Swal from 'sweetalert2';
@@ -72,11 +72,13 @@ const showDeleteConfirm = ref(false);
 const cameraToDelete = ref<Camera | null>(null);
 const deleting = ref(false);
 
-const { data: cameras, pending, error, refresh } = useAsyncData(
+const { data: paginatedResponse, pending, error, refresh } = useAsyncData(
     'cameras-list',
     () => api.cameras.getAll(),
     { server: false, lazy: true }
 );
+
+const cameras = computed(() => paginatedResponse.value?.data || []);
 
 const editCamera = (camera: Camera) => {
     navigateTo(`/cameras/config?edit=${camera.id}`);

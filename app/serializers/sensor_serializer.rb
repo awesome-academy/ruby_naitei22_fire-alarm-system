@@ -13,16 +13,15 @@ class SensorSerializer < ActiveModel::Serializer
              :latest_log
 
   belongs_to :zone
-  has_many :sensor_logs
 
   def latest_log
-    latest = object.sensor_logs.order(created_at: :desc).first
-    return unless latest
+    log = object.latest_log
+    return unless log
 
     {
-      temperature: latest.temperature,
-      humidity: latest.humidity,
-      created_at: latest.created_at
+      temperature: log.temperature,
+      humidity: log.humidity,
+      created_at: log.created_at
     }
   end
 end

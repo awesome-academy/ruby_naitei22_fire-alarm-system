@@ -6,6 +6,7 @@ import logsRepository from '~/repositories/logs';
 import sensorsRepository from '~/repositories/sensors';
 import usersRepository from '~/repositories/users';
 import zonesRepository from '~/repositories/zones';
+import invitationsRepository from '~/repositories/invitations';
 
 export type Api = ReturnType<typeof createApi>;
 
@@ -19,6 +20,7 @@ function createApi() {
         sensors: sensorsRepository(apiClient),
         users: usersRepository(apiClient),
         zones: zonesRepository(apiClient),
+        invitations: invitationsRepository(apiClient),
     };
 }
 

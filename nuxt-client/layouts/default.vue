@@ -33,48 +33,37 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue';
-import { useNuxtApp } from '#app';
+import { ref } from 'vue';
 import LayoutTheSidebar from '~/components/layout/TheSidebar.vue';
 import LayoutTheHeader from '~/components/layout/TheHeader.vue';
 import { SpeakerWaveIcon, XMarkIcon } from '@heroicons/vue/20/solid';
+import { useActionCable } from '~/composables/useActionCable';
+
+useActionCable();
 
 const audioUnlocked = ref(false);
-let silentAudioPlayer: HTMLAudioElement | null = null;
 
 const unlockAudio = () => {
     if (process.client && !audioUnlocked.value) {
-        if (!silentAudioPlayer) {
-            try {
-                silentAudioPlayer = new Audio('/sounds/alert.mp3');
-                silentAudioPlayer.volume = 0;
-                silentAudioPlayer.load();
-            } catch (e) {
-                audioUnlocked.value = true;
-                return;
-            }
+        try {
+            const silentAudioPlayer = new Audio('/sounds/alert.mp3');
+            silentAudioPlayer.volume = 0;
+            silentAudioPlayer
+                .play()
+                .then(() => {
+                    audioUnlocked.value = true;
+                    console.log('Audio context has been unlocked by user interaction.');
+                })
+                .catch((error) => {
+                    console.warn('Could not unlock audio context, alerts may be silent.', error);
+                    audioUnlocked.value = true;
+                });
+        } catch (error) {
+            console.error('Error while trying to create silent audio player:', error);
+            audioUnlocked.value = true;
         }
-
-        silentAudioPlayer
-            .play()
-            .then(() => {
-                audioUnlocked.value = true;
-            })
-            .catch(() => {});
     }
 };
-
-const { $socket } = useNuxtApp();
-
-onUnmounted(() => {
-    if ($socket && $socket.connected) {
-        $socket.disconnect();
-    }
-    if (silentAudioPlayer) {
-        silentAudioPlayer.pause();
-        silentAudioPlayer = null;
-    }
-});
 </script>
 
 <style>

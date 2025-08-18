@@ -9,6 +9,10 @@ en:
       refresh_token:
         invalid_token: "Invalid refresh token."
         token_expired: "Refresh token has expired."
+      password_updater:
+        invalid_token: "Invalid or expired token"
+      password_reset:
+        generic_error: "An unexpected error occurred while trying to reset the password. Please try again."
   invitation_mailer:
     invitation:
       subject: "%{creator_name} has invited you to join the Fire Alarm System"
@@ -20,6 +24,14 @@ en:
       code_notice_html: "Your invitation code is: <strong>%{invitation_code}</strong>"
       expiration_notice: "This invitation will expire on %{expiration_date}."
       thanks: "Thanks!"
+  user_mailer:
+    password_reset:
+      subject: "Password Reset Instructions for FireWolf"
+      header: "Reset your password, %{user_name}"
+      body_1: "Someone has requested a link to change your password. You can do this through the link below."
+      link_text: "Reset my password"
+      body_2: "If you didn't request this, please ignore this email."
+      body_3: "Your password won't change until you access the link above and create a new one."
   api:
     v1:
       authentication:
@@ -32,6 +44,13 @@ en:
         implemented: "This endpoint is not yet implemented."
         refresh:
           success: "Token refreshed successfully."
+        update_role:
+          success: "User role updated successfully."
+          user_not_found: "User not found."
+        forgot_password:
+          success: "If an account with this email exists, we have sent a password reset link."
+        reset_password:
+          success: "Your password has been reset successfully. Please log in."
       base_controller:
         not_authenticated: "Not Authenticated: %{message}"
         not_authorized: "Forbidden: %{message}"

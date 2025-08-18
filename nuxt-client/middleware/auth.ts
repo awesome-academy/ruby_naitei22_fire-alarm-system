@@ -1,7 +1,11 @@
 import { useAuth } from '~/composables/useAuth';
 
 export default defineNuxtRouteMiddleware((to) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isInitialized } = useAuth();
+
+  if (!isInitialized.value) {
+    return;
+  }
 
   if (!isAuthenticated.value) {
     const redirectPath = to.fullPath !== '/' ? to.fullPath : '/dashboard';

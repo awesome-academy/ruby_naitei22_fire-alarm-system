@@ -7,9 +7,6 @@
             Sensor Name
           </th>
           <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-            Type
-          </th>
-          <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
             Zone
           </th>
           <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
@@ -44,9 +41,6 @@
           <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-white">
             {{ sensor.name }}
           </td>
-          <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-300">
-            {{ sensor.type }}
-          </td>
           <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-400">
             {{ sensor.zone?.name || 'N/A' }}
           </td>
@@ -57,15 +51,15 @@
             <SensorsSensorStatusBadge :status="sensor.status" />
           </td>
           <td class="px-4 py-4 whitespace-nowrap text-center text-sm text-gray-300">
-            <span v-if="sensor.latestLog?.temperature !== null && sensor.latestLog?.temperature !== undefined">
-              {{ sensor.latestLog.temperature.toFixed(1) }}°C
+            <span v-if="sensor.latest_log?.temperature !== null && sensor.latest_log?.temperature !== undefined">
+              {{ sensor.latest_log.temperature.toFixed(1) }}°C
             </span>
-            <span v-if="sensor.latestLog?.humidity !== null && sensor.latestLog?.humidity !== undefined" class="ml-2">
-              {{ sensor.latestLog.humidity.toFixed(0) }}%
+            <span v-if="sensor.latest_log?.humidity !== null && sensor.latest_log?.humidity !== undefined" class="ml-2">
+              {{ sensor.latest_log.humidity.toFixed(0) }}%
             </span>
-            <span v-if="!sensor.latestLog?.temperature && !sensor.latestLog?.humidity" class="text-gray-600">-</span>
-            <div v-if="sensor.latestLog?.createdAt" class="text-xs text-gray-500 mt-1">
-              {{ formatDateTime(sensor.latestLog.createdAt) }}
+            <span v-if="!sensor.latest_log?.temperature && !sensor.latest_log?.humidity" class="text-gray-600">-</span>
+            <div v-if="sensor.latest_log?.created_at" class="text-xs text-gray-500 mt-1">
+              {{ formatDateTime(sensor.latest_log.created_at) }}
             </div>
           </td>
           <td class="px-4 py-4 whitespace-nowrap text-center text-sm text-gray-400">

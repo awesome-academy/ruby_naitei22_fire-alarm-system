@@ -1,14 +1,15 @@
 class AlertSerializer < ActiveModel::Serializer
-  attributes :id, :message, :origin, :status, :via_email, :created_at,
-             :updated_at
+  attributes :id, :message, :origin, :status, :created_at, :image_url,
+             :via_email
 
-  belongs_to :user, serializer: UserSerializer
-  belongs_to :zone, serializer: ZoneSerializer
-  belongs_to :owner
+  belongs_to :user
+  belongs_to :zone
 
-  attribute :snapshot_url do
-    if object.snapshot.attached?
-      Rails.application.routes.url_helpers.url_for(object.snapshot)
-    end
+  attribute :sensor do
+    object.owner if object.owner_type == Sensor.name
+  end
+
+  attribute :camera do
+    object.owner if object.owner_type == Camera.name
   end
 end

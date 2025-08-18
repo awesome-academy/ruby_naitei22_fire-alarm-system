@@ -1,9 +1,9 @@
 import type { $Fetch } from 'ofetch';
-import type { Camera, CameraWithDetails } from '~/types/api';
+import type { Camera, CameraWithDetails, PaginatedResponse } from '~/types/api';
 
 export default ($fetch: $Fetch) => ({
     getAll() {
-        return $fetch<CameraWithDetails[]>('/cameras');
+        return $fetch<PaginatedResponse<CameraWithDetails>>('/cameras');
     },
     getById(id: string) {
         return $fetch<Camera>(`/cameras/${id}`);

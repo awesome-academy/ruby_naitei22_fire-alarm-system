@@ -27,7 +27,7 @@ class Invitation < ApplicationRecord
 
   def signup_url
     base_url = ENV.fetch("FRONTEND_URL")
-    "#{base_url}/signup?invitation_code=#{code}"
+    "#{base_url}/register?invitation_code=#{code}"
   end
 
   private
