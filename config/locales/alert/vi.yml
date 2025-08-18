@@ -29,3 +29,17 @@ vi:
       snapshot_header: "Hình ảnh từ camera"
       call_to_action: "Vui lòng đăng nhập vào hệ thống để xử lý."
       thank_you: "Xin cảm ơn."
+    sensor_threshold_alert:
+      subject: "🔥 [Cảnh báo Cảm biến] Nhiệt độ vượt ngưỡng!"
+      header: "🔥 Cảnh báo Cảm biến!"
+      intro_html: "Cảm biến <strong>%{sensor_name}</strong> trong khu vực <strong>%{zone_name}</strong> đã vượt quá ngưỡng nhiệt độ."
+      content_label: "Nội dung cảnh báo"
+      threshold_label: "Ngưỡng"
+      time_label: "Thời gian"
+      call_to_action: "Vui lòng đăng nhập vào hệ thống để kiểm tra."
+      thank_you: "Cảm ơn bạn đã chú ý."
+  alerts:
+    temperature_exceeded: "Sensor %{sensor_name} tại %{location} vượt ngưỡng %{threshold}°C, hiện tại: %{temperature}°C"
+    email:
+      supervisor_inactive: "Supervisor %{name} (email: %{email}) đang ở trạng thái inactive — bỏ qua gửi mail."
+      admin_inactive: "Admin %{name} (email: %{email}) đang ở trạng thái inactive — bỏ qua gửi mail."

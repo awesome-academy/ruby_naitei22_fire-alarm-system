@@ -70,6 +70,7 @@ Rails.application.configure do
   config.hosts << "api"
   config.hosts << "localhost"
   config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.perform_deliveries = true
   config.action_mailer.perform_caching = false
   host = "127.0.0.1:3000" 
   config.action_mailer.default_url_options = { host: host, protocol: "http" }

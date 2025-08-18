@@ -13,4 +13,11 @@ class Zone < ApplicationRecord
     result = result.sorted_by_name if params[:sort] == SORT_BY_NAME
     result
   }
+  scope :with_location, (lambda do
+    where.not(city: nil)
+         .or(where.not(latitude: nil, longitude: nil))
+  end)
+  scope :with_active_sensors, (lambda do
+    joins(:sensors).where(sensors: {status: :active})
+  end)
 end
