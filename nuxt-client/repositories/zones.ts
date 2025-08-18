@@ -9,10 +9,16 @@ export default ($fetch: $Fetch) => ({
         return $fetch<ZoneWithDetails>(`/zones/${id}`);
     },
     create(data: Partial<Zone>) {
-        return $fetch<Zone>('/zones', { method: 'POST', body: data });
+        return $fetch<Zone>('/zones', {
+            method: 'POST',
+            body: { zone: data }, 
+        });
     },
     update(id: string, data: Partial<Zone>) {
-        return $fetch<Zone>(`/zones/${id}`, { method: 'PATCH', body: data });
+        return $fetch<Zone>(`/zones/${id}`, {
+            method: 'PATCH',
+            body: { zone: data }, 
+        });
     },
     delete(id: string) {
         return $fetch(`/zones/${id}`, { method: 'DELETE' });

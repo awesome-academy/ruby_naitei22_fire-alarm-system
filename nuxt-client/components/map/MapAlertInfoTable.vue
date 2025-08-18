@@ -18,9 +18,9 @@
                         class="hover:bg-red-900/20 cursor-pointer"
                         :class="{ 'bg-blue-900/30 ring-1 ring-blue-500/50': alert.sensorId === selectedSensorId }"
                         @click="emitRowClick(alert)">
-                    <td class="px-3 py-2 whitespace-nowrap text-sm text-red-300">{{ formatDateTimeShort(alert.createdAt) }}</td>
-                    <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-red-300">{{ alert.sensor?.name || 'N/A' }}</td>
-                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-400">{{ alert.sensor?.zone?.name || 'N/A' }}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-red-300">{{ formatDateTimeShort(alert.created_at) }}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-red-300">{{ (alert.sensor || alert.camera)?.name || 'N/A' }}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-400">{{ alert.zone?.name || 'N/A' }}</td>
                     <td class="px-3 py-2 text-sm text-gray-200 max-w-xs truncate" :title="alert.message">{{ alert.message }}</td>
                     <td class="px-3 py-2 whitespace-nowrap text-center text-sm">
                         <AlertStatusBadge :status="alert.status" />

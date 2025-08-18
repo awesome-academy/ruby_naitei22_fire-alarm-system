@@ -9,10 +9,10 @@ export default ($fetch: $Fetch) => ({
         return $fetch<Camera>(`/cameras/${id}`);
     },
     create(data: Partial<Camera>) {
-        return $fetch<Camera>('/cameras', { method: 'POST', body: data });
+        return $fetch<Camera>('/cameras', { method: 'POST', body: { camera: data } });
     },
     update(id: string, data: Partial<Camera>) {
-        return $fetch<Camera>(`/cameras/${id}`, { method: 'PATCH', body: data });
+        return $fetch<Camera>(`/cameras/${id}`, { method: 'PATCH', body: { camera: data } });
     },
     delete(id: string) {
         return $fetch(`/cameras/${id}`, { method: 'DELETE' });

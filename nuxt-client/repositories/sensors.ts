@@ -10,10 +10,16 @@ export default ($fetch: $Fetch) => ({
         return $fetch<SensorWithDetails>(`/sensors/${id}`);
     },
     create(data: Partial<Sensor>) {
-        return $fetch<Sensor>('/sensors', { method: 'POST', body: data });
+        return $fetch<Sensor>('/sensors', {
+            method: 'POST',
+            body: { sensor: data },
+        });
     },
     update(id: string, data: Partial<Sensor>) {
-        return $fetch<Sensor>(`/sensors/${id}`, { method: 'PATCH', body: data });
+        return $fetch<Sensor>(`/sensors/${id}`, {
+            method: 'PATCH',
+            body: { sensor: data },
+        });
     },
     delete(id: string) {
         return $fetch(`/sensors/${id}`, { method: 'DELETE' });

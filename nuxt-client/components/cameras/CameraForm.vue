@@ -17,7 +17,7 @@
 
         <div>
             <label for="cam-zone" class="input-label">Zone <span class="text-red-500">*</span></label>
-            <select id="cam-zone" v-model="formData.zoneId" required class="input-field w-full mt-1">
+            <select id="cam-zone" v-model="formData.zone_id" required class="input-field w-full mt-1">
                 <option disabled value="">-- Select Zone --</option>
                 <option v-if="availableZones.length === 0" disabled>Loading or no zones available...</option>
                 <option v-for="zone in availableZones" :key="zone.id" :value="zone.id">{{ zone.name }}</option>
@@ -50,12 +50,12 @@
             <div>
                 <label class="input-label">AI Fire Detection</label>
                 <div class="mt-2 flex items-center">
-                    <Switch v-model="formData.isDetecting" :class="formData.isDetecting ? 'bg-orange-600' : 'bg-gray-600'" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-800">
+                    <Switch v-model="formData.is_detecting" :class="formData.is_detecting ? 'bg-orange-600' : 'bg-gray-600'" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-800">
                         <span class="sr-only">Toggle fire detection</span>
-                        <span aria-hidden="true" :class="formData.isDetecting ? 'translate-x-5' : 'translate-x-0'" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out" />
+                        <span aria-hidden="true" :class="formData.is_detecting ? 'translate-x-5' : 'translate-x-0'" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out" />
                     </Switch>
-                    <span class="ml-3 text-sm font-medium" :class="formData.isDetecting ? 'text-orange-300' : 'text-gray-400'">
-                        {{ formData.isDetecting ? 'Enabled' : 'Disabled' }}
+                    <span class="ml-3 text-sm font-medium" :class="formData.is_detecting ? 'text-orange-300' : 'text-gray-400'">
+                        {{ formData.is_detecting ? 'Enabled' : 'Disabled' }}
                     </span>
                 </div>
                 <p class="mt-1 text-xs text-gray-500">Enable to allow the AI system to scan images from this camera.</p>
@@ -87,17 +87,31 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['submit', 'cancel']);
+const mapStatusToNumber = (status: CameraStatus): number => {
+  switch (status) {
+    case CameraStatus.ONLINE:
+      return 0;
+    case CameraStatus.OFFLINE:
+      return 1;
+    case CameraStatus.RECORDING:
+      return 2;
+    case CameraStatus.ERROR:
+      return 3;
+    default:
+      return 0; 
+  }
+};
 
-type CameraFormData = Omit<Partial<Camera>, 'zone' | 'alerts' | 'createdAt'> & { zoneId?: string | null };
+type CameraFormData = Omit<Partial<Camera>, 'zone' | 'alerts' | 'createdAt'> & { zone_id?: string | null };
 const formData = reactive<CameraFormData>({
     id: undefined,
     name: '',
     url: '',
-    zoneId: '',
+    zone_id: '',
     latitude: null,
     longitude: null,
-    status: CameraStatus.ONLINE,
-    isDetecting: false,
+    status: mapStatusToNumber(CameraStatus.ONLINE),
+    is_detecting: false,
 });
 const localError = ref<string | null>(props.initialError);
 const cameraStatuses = Object.values(CameraStatus);
@@ -109,20 +123,20 @@ watch(() => props.initialData, (newData) => {
         formData.id = newData.id;
         formData.name = newData.name || '';
         formData.url = newData.url || '';
-        formData.zoneId = newData.zoneId || '';
+        formData.zone_id = newData.zone_id || '';
         formData.latitude = newData.latitude ?? null;
         formData.longitude = newData.longitude ?? null;
-        formData.status = newData.status || CameraStatus.ONLINE;
-        formData.isDetecting = newData.isDetecting ?? false;
+        formData.status = newData.status ? mapStatusToNumber(newData.status) : mapStatusToNumber(CameraStatus.ONLINE);
+        formData.is_detecting = newData.is_detecting ?? false;
     } else {
         formData.id = undefined;
         formData.name = '';
         formData.url = '';
-        formData.zoneId = '';
+        formData.zone_id = '';
         formData.latitude = null;
         formData.longitude = null;
-        formData.status = CameraStatus.ONLINE;
-        formData.isDetecting = false;
+        formData.status = mapStatusToNumber(CameraStatus.ONLINE);
+        formData.is_detecting = false;
     }
 }, { immediate: true, deep: true });
 
@@ -133,18 +147,18 @@ const submitForm = () => {
     if (!formData.url?.trim()) { localError.value = 'URL is required.'; return; }
     const urlPattern = /^(rtsp|http|https):\/\/.+/;
     if (!urlPattern.test(formData.url.trim())) { localError.value = 'Invalid URL format (must start with rtsp:// or http(s)://).'; return; }
-    if (!formData.zoneId) { localError.value = 'Please select a zone.'; return; }
+    if (!formData.zone_id) { localError.value = 'Please select a zone.'; return; }
     if (formData.latitude !== null && formData.latitude !== undefined && (formData.latitude < -90 || formData.latitude > 90)) { localError.value = 'Invalid latitude (-90 to 90).'; return; }
     if (formData.longitude !== null && formData.longitude !== undefined && (formData.longitude < -180 || formData.longitude > 180)) { localError.value = 'Invalid longitude (-180 to 180).'; return; }
 
     const dataToSubmit: Partial<CameraFormData> = {
         name: formData.name.trim(),
         url: formData.url.trim(),
-        zoneId: formData.zoneId,
+        zone_id: formData.zone_id,
         latitude: formData.latitude,
         longitude: formData.longitude,
-        isDetecting: formData.isDetecting,
-        status: formData.status
+        is_detecting: formData.is_detecting,
+        status: mapStatusToNumber(formData.status as CameraStatus),
     };
 
     if (isEditMode.value) {

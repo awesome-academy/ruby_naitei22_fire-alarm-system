@@ -24,7 +24,7 @@
                             {{ camera.url }}
                         </a>
                     </td>
-                    <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-500">{{ formatDateTimeShort(camera.createdAt) }}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-500">{{ formatDateTimeShort(camera.created_at) }}</td>
                 </tr>
             </tbody>
         </table>

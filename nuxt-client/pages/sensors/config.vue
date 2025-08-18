@@ -69,17 +69,27 @@ const submitError = ref<string | null>(null);
 const { data, pending, error, refresh } = useAsyncData(
     'sensor-config-data',
     async () => {
-        const fetchZonesPromise = api.zones.getAll({ fields: 'id,name' });
+        // Luôn lấy đủ zones để hiển thị trong dropdown (limit cao)
+        const fetchZonesPromise = api.zones.getAll({ limit: 1000, fields: 'id,name' });
+        
         const fetchSensorPromise = isEditMode.value
             ? api.sensors.getById(sensorId.value!)
             : Promise.resolve(null);
-        const [zones, sensor] = await Promise.all([fetchZonesPromise, fetchSensorPromise]);
-        return { zones, sensor };
+        
+        const [zonesResponse, sensor] = await Promise.all([fetchZonesPromise, fetchSensorPromise]);
+        
+        // Trả về toàn bộ `zonesResponse` object từ `useAsyncData`
+        // Thay vì chỉ trả về mảng.
+        return { zones: zonesResponse, sensor };
     },
     { server: false, lazy: true }
 );
 
-const availableZones = computed(() => data.value?.zones || []);
+// === SỬA LẠI COMPUTED PROPERTY NÀY ===
+// `data.value.zones` bây giờ là một object { data: [], pagy: ... }
+// Chúng ta cần truy cập vào `.data` để lấy mảng.
+// Sử dụng optional chaining `?.` để an toàn.
+const availableZones = computed(() => data.value?.zones?.data || []);
 const sensorData = computed(() => data.value?.sensor || null);
 
 const handleSubmit = async (formData: Partial<Sensor>) => {

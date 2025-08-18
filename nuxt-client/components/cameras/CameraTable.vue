@@ -42,13 +42,6 @@
                         >
                             <PencilSquareIcon class="h-5 w-5" />
                         </NuxtLink>
-                        <button
-                            @click="$emit('delete', cam)"
-                            class="inline-flex items-center justify-center h-8 w-8 rounded-full text-red-500 hover:bg-gray-700 hover:text-red-400 transition-colors"
-                            title="Delete"
-                        >
-                            <TrashIcon class="h-5 w-5" />
-                        </button>
                     </td>
                 </tr>
             </tbody>

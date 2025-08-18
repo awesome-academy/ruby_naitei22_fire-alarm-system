@@ -92,7 +92,7 @@ class Api::V1::SensorsController < Api::V1::BaseController
   end
 
   def sensor_params
-    params.require(:sensor).permit Sensor::SENSOR_PERMITTED
+    params.require(:sensor).except(:id).permit Sensor::SENSOR_PERMITTED
   end
 
   def authorize_admin!

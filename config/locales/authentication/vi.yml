@@ -60,4 +60,3 @@ vi:
           invalid_token: "Token không hợp lệ: %{error}"
           auth_failed: "Xác thực thất bại."
           admins_only: "Hành động này chỉ dành cho quản trị viên."
-          
