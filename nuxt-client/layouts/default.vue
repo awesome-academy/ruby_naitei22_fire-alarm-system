@@ -37,9 +37,6 @@ import { ref } from 'vue';
 import LayoutTheSidebar from '~/components/layout/TheSidebar.vue';
 import LayoutTheHeader from '~/components/layout/TheHeader.vue';
 import { SpeakerWaveIcon, XMarkIcon } from '@heroicons/vue/20/solid';
-import { useActionCable } from '~/composables/useActionCable';
-
-useActionCable();
 
 const audioUnlocked = ref(false);
 
