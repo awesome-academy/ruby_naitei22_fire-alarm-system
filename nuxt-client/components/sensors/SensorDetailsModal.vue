@@ -18,9 +18,6 @@
                     <dt class="text-gray-400">ID:</dt>
                     <dd class="col-span-2 text-gray-200 font-mono text-xs">{{ sensorDetail.id }}</dd>
 
-                    <dt class="text-gray-400">Type:</dt>
-                    <dd class="col-span-2 text-gray-200">{{ sensorDetail.type }}</dd>
-
                     <dt class="text-gray-400">Location:</dt>
                     <dd class="col-span-2 text-gray-200">{{ sensorDetail.location }}</dd>
 
@@ -42,7 +39,7 @@
                     <dd class="col-span-2 text-gray-200">{{ sensorDetail.sensitivity ?? 'Not set' }}</dd>
 
                     <dt class="text-gray-400">Created At:</dt>
-                    <dd class="col-span-2 text-gray-200">{{ formatDateTime(sensorDetail.createdAt) }}</dd>
+                    <dd class="col-span-2 text-gray-200">{{ formatDateTime(sensorDetail.created_at) }}</dd>
                 </div>
 
                 <div class="mt-6 pt-4 border-t border-gray-700">
@@ -57,16 +54,16 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-gray-800 divide-y divide-gray-600">
-                                <tr v-if="!sensorDetail.logs || sensorDetail.logs.length === 0">
+                                <tr v-if="!sensorDetail.latest_log || sensorDetail.latest_log.length === 0">
                                     <td colspan="3" class="px-3 py-3 text-center text-sm text-gray-500">No logs available.</td>
                                 </tr>
-                                <tr v-for="log in sensorDetail.logs" :key="log.id">
-                                    <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-400">{{ formatDateTime(log.createdAt) }}</td>
-                                    <td class="px-3 py-2 whitespace-nowrap text-xs text-center" :class="{'text-white': log.temperature !== null, 'text-gray-600': log.temperature === null}">
-                                        {{ log.temperature?.toFixed(1) ?? '-' }}
+                                <tr>
+                                    <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-400">{{ formatDateTime(sensorDetail.latest_log.created_at) }}</td>
+                                    <td class="px-3 py-2 whitespace-nowrap text-xs text-center" :class="{'text-white': sensorDetail.latest_log.temperature !== null, 'text-gray-600': sensorDetail.latest_log.temperature === null}">
+                                        {{ sensorDetail.latest_log.temperature?.toFixed(1) ?? '-' }}
                                     </td>
-                                    <td class="px-3 py-2 whitespace-nowrap text-xs text-center" :class="{'text-white': log.humidity !== null, 'text-gray-600': log.humidity === null}">
-                                        {{ log.humidity?.toFixed(0) ?? '-' }}
+                                    <td class="px-3 py-2 whitespace-nowrap text-xs text-center" :class="{'text-white': sensorDetail.latest_log.humidity !== null, 'text-gray-600': sensorDetail.latest_log.humidity === null}">
+                                        {{ sensorDetail.latest_log.humidity?.toFixed(0) ?? '-' }}
                                     </td>
                                 </tr>
                             </tbody>
@@ -74,7 +71,6 @@
                     </div>
                 </div>
             </div>
-            <div v-else class="text-center py-10 text-gray-500">Sensor information not found.</div>
         </template>
 
         <template #footer>

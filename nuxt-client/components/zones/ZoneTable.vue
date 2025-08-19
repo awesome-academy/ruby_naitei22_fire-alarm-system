@@ -64,9 +64,6 @@
                         <button @click="$emit('edit', zone)" class="text-blue-500 hover:text-blue-400 mr-3" title="Edit">
                             <PencilSquareIcon class="h-5 w-5 inline-block" />
                         </button>
-                        <button @click="$emit('delete', zone)" class="text-red-500 hover:text-red-400" title="Delete">
-                            <TrashIcon class="h-5 w-5 inline-block" />
-                        </button>
                     </td>
                 </tr>
             </tbody>

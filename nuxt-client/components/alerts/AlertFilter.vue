@@ -59,11 +59,7 @@
   <script setup lang="ts">
   import { ref, reactive, defineEmits } from 'vue';
   import { FunnelIcon, XMarkIcon } from '@heroicons/vue/20/solid';
-  enum AlertStatus {
-    PENDING = 'PENDING',
-    RESOLVED = 'RESOLVED',
-    IGNORED = 'IGNORED',
-  }
+  import { AlertStatus } from '~/types/api'; 
   
   const alertStatuses = Object.values(AlertStatus) as AlertStatus[];
   const emit = defineEmits(['filter']);

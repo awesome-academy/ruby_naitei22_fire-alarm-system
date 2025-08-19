@@ -70,13 +70,12 @@ const { data, pending, error, refresh } = useAsyncData(
         const fetchCameraPromise = isEditMode.value
             ? api.cameras.getById(cameraId.value!)
             : Promise.resolve(null);
-        const [zones, camera] = await Promise.all([fetchZonesPromise, fetchCameraPromise]);
-        return { zones, camera };
+        const [zonesResponse, camera] = await Promise.all([fetchZonesPromise, fetchCameraPromise]);
+        return { zones: zonesResponse, camera };
     },
     { server: false, lazy: true }
 );
-
-const availableZones = computed(() => data.value?.zones || []);
+const availableZones = computed(() => data.value?.zones?.data || []);
 const cameraData = computed(() => data.value?.camera || null);
 
 const pageTitle = computed(() => (isEditMode.value ? 'Edit Camera' : 'Add New Camera'));

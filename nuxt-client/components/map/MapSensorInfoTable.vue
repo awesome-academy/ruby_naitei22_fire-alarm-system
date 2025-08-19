@@ -27,16 +27,18 @@
           <td class="px-3 py-2 whitespace-nowrap text-center text-sm">
             <SensorsSensorStatusBadge :status="sensor.status" />
           </td>
-          <td class="px-3 py-2 whitespace-nowrap text-sm text-center" :class="getTempColor(sensor.latestLog?.temperature, sensor.threshold)">
-            <span v-if="sensor.latestLog?.temperature != null">{{ sensor.latestLog.temperature.toFixed(1) }}°C</span>
-             <span v-else class="text-gray-500">-°C</span>
+          <td class="px-3 py-2 whitespace-nowrap text-sm text-center" :class="getTempColor(sensor.latest_log?.temperature, sensor.threshold)">
+            <span v-if="sensor.latest_log?.temperature != null">{{ sensor.latest_log.temperature.toFixed(1) }}°C</span>
+            <span v-else class="text-gray-500">-°C</span>
           </td>
           <td class="px-3 py-2 whitespace-nowrap text-sm text-center text-gray-300">
-            <span v-if="sensor.latestLog?.humidity != null">{{ sensor.latestLog.humidity.toFixed(1) }}%</span>
-              <span v-else class="text-gray-500">-%</span>
+            <span v-if="sensor.latest_log?.humidity != null">{{ sensor.latest_log.humidity.toFixed(1) }}%</span>
+            <span v-else class="text-gray-500">-%</span>
           </td>
-          <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-500"><span v-if="sensor.latestLog?.createdAt">{{ formatDistanceToNow(new Date(sensor.latestLog.createdAt), { addSuffix: true }) }}</span>
-        <span v-else class="text-gray-500">N/A</span></td>
+          <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-500">
+            <span v-if="sensor.latest_log?.created_at">{{ formatDistanceToNow(new Date(sensor.latest_log.created_at), { addSuffix: true }) }}</span>
+            <span v-else class="text-gray-500">N/A</span>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -47,6 +49,7 @@
 import { defineProps, defineEmits, computed } from 'vue';
 import { SensorStatus, type SensorWithOptionalZone } from '~/types/api';
 import SensorsSensorStatusBadge from '~/components/sensors/SensorStatusBadge.vue';
+import { formatDistanceToNow } from 'date-fns';
 
 const props = defineProps({
   sensors: {
@@ -79,7 +82,7 @@ const sortedSensors = computed(() => {
 });
 
 const emitRowClick = (sensor: SensorWithOptionalZone) => {
-  if (sensor.latitude != null && sensor.longitude != null){
+  if (sensor.latitude != null && sensor.longitude != null) {
     emit('row-click', {
       id: sensor.id,
       type: 'Sensor',
@@ -99,7 +102,7 @@ const emitRowClick = (sensor: SensorWithOptionalZone) => {
 };
 
 const getTempColor = (temp: number | null | undefined, threshold: number | null | undefined): string => {
-  if (temp === null || temp === undefined) return 'text-gray-600';
+  if (temp === null || temp === undefined) return 'text-gray-500';
   if (threshold !== null && threshold !== undefined && temp >= threshold) return 'text-red-400 font-bold';
   return 'text-gray-300';
 };

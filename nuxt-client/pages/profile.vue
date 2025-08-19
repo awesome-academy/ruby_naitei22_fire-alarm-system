@@ -86,11 +86,11 @@
                         </div>
                         <div class="flex justify-between">
                             <dt class="text-gray-400">Created At:</dt>
-                            <dd class="text-gray-300">{{ formatDateTime(profileData.createdAt) }}</dd>
+                            <dd class="text-gray-300">{{ formatDateTime(profileData.created_at) }}</dd>
                         </div>
                         <div class="flex justify-between">
                             <dt class="text-gray-400">Last Updated:</dt>
-                            <dd class="text-gray-300">{{ formatDateTime(profileData.updatedAt) }}</dd>
+                            <dd class="text-gray-300">{{ formatDateTime(profileData.updated_at) }}</dd>
                         </div>
                     </dl>
                 </div>

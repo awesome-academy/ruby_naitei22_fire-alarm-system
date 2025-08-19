@@ -73,9 +73,6 @@
             <NuxtLink :to="`/sensors/config?edit=${sensor.id}`" class="text-blue-500 hover:text-blue-400 mr-3" title="Edit">
               <PencilSquareIcon class="h-5 w-5 inline-block" />
             </NuxtLink>
-            <button @click="$emit('delete', sensor.id)" class="text-red-500 hover:text-red-400" title="Delete">
-              <TrashIcon class="h-5 w-5 inline-block" />
-            </button>
           </td>
         </tr>
       </tbody>

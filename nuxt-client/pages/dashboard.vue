@@ -172,7 +172,11 @@ const {
               && (sensorsStatRes.value.total + camerasStatRes.value.total) > 0
                 ? (alertsStatRes.value.pending * 100 / (sensorsStatRes.value.total + camerasStatRes.value.total))
                 : null,
-            recentAlerts: recentAlertsRes.status === 'fulfilled' ? recentAlertsRes.value.data.slice(0, 5): [],
+            recentAlerts: recentAlertsRes.status === 'fulfilled'
+              ? recentAlertsRes.value.data
+                  .filter(alert => alert.status === 'pending')
+                  .slice(0, 5)
+              : [],
             availableSensors: availableSensorsRes.status === 'fulfilled' ? availableSensorsRes.value.data : [],
         }
     },

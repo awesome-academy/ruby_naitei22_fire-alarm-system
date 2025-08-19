@@ -29,8 +29,8 @@
         </div>
 
         <div>
-            <label for="sensor-zone" class="block text-sm font-medium text-gray-300 mb-1">Zone <span class="text-red-500">*</span></label>
-            <select id="sensor-zone" v-model="formData.zoneId" required class="w-full input-style">
+            <label for="sensor-zone" class="block text-sm font-medium text-white mb-1">Zone <span class="text-red-500">*</span></label>
+            <select id="sensor-zone" v-model="formData.zone_id" required class="w-full input-style">
                 <option disabled value="">-- Select Zone --</option>
                 <option v-for="zone in availableZones" :key="zone.id" :value="zone.id">
                     {{ zone.name }}
@@ -109,7 +109,20 @@ const props = defineProps({
 
 const emit = defineEmits(['submit', 'cancel']);
 
-type SensorFormData = Omit<Partial<Sensor>, 'zone' | 'logs' | 'latestLog' | 'activeAlert' | 'createdAt'> & { zoneId?: string | null };
+const mapStatusToNumber = (status: SensorStatus): number => {
+  switch (status) {
+    case SensorStatus.ACTIVE:
+      return 0;
+    case SensorStatus.INACTIVE:
+      return 1;
+    case SensorStatus.ERROR:
+      return 2;
+    default:
+      return 0; 
+  }
+};
+
+type SensorFormData = Omit<Partial<Sensor>, 'zone' | 'logs' | 'latestLog' | 'activeAlert' | 'createdAt'> & { zone_id?: string | null };
 const formData = reactive<SensorFormData>({
     id: undefined,
     name: '',
@@ -117,10 +130,10 @@ const formData = reactive<SensorFormData>({
     location: '',
     threshold: null,
     sensitivity: null,
-    status: SensorStatus.ACTIVE,
+    status: mapStatusToNumber(SensorStatus.ACTIVE),
     latitude: null,
     longitude: null,
-    zoneId: ''
+    zone_id: ''
 });
 const localError = ref<string | null>(props.initialError);
 
@@ -136,10 +149,10 @@ watch(() => props.initialData, (newData) => {
         formData.location = newData.location || '';
         formData.threshold = newData.threshold ?? null;
         formData.sensitivity = newData.sensitivity ?? null;
-        formData.status = newData.status || SensorStatus.ACTIVE;
+        formData.status = newData.status ? mapStatusToNumber(newData.status) : mapStatusToNumber(SensorStatus.ACTIVE);
         formData.latitude = newData.latitude ?? null;
         formData.longitude = newData.longitude ?? null;
-        formData.zoneId = newData.zoneId || '';
+        formData.zone_id = newData.zone_id || '';
     } else {
         formData.id = undefined;
         formData.name = '';
@@ -147,10 +160,10 @@ watch(() => props.initialData, (newData) => {
         formData.location = '';
         formData.threshold = null;
         formData.sensitivity = null;
-        formData.status = SensorStatus.ACTIVE;
+        formData.status = mapStatusToNumber(SensorStatus.ACTIVE);
         formData.latitude = null;
         formData.longitude = null;
-        formData.zoneId = '';
+        formData.zone_id = '';
     }
 }, { immediate: true, deep: true });
 
@@ -160,7 +173,7 @@ const submitForm = () => {
     if (!formData.name?.trim()) { localError.value = 'Sensor name is required.'; return; }
     if (!formData.type?.trim()) { localError.value = 'Sensor type is required.'; return; }
     if (!formData.location?.trim()) { localError.value = 'Location description is required.'; return; }
-    if (!formData.zoneId) { localError.value = 'Please select a zone.'; return; }
+    if (!formData.zone_id) { localError.value = 'Please select a zone.'; return; }
     if (formData.latitude !== null && formData.latitude !== undefined && (formData.latitude < -90 || formData.latitude > 90)) { localError.value = 'Invalid latitude.'; return; }
     if (formData.longitude !== null && formData.longitude !== undefined && (formData.longitude < -180 || formData.longitude > 180)) { localError.value = 'Invalid longitude.'; return; }
 
@@ -170,10 +183,10 @@ const submitForm = () => {
         location: formData.location.trim(),
         threshold: formData.threshold,
         sensitivity: formData.sensitivity,
-        status: formData.status,
+        status: mapStatusToNumber(formData.status as SensorStatus),
         latitude: formData.latitude,
         longitude: formData.longitude,
-        zoneId: formData.zoneId,
+        zone_id: formData.zone_id,
     };
 
     if (isEditMode.value) {
@@ -192,7 +205,6 @@ const formatStatus = (status: SensorStatus): string => {
         case SensorStatus.ACTIVE: return 'Active';
         case SensorStatus.INACTIVE: return 'Inactive';
         case SensorStatus.ERROR: return 'Error';
-        case SensorStatus.MAINTENANCE: return 'Maintenance';
         default: return status;
     }
 };
