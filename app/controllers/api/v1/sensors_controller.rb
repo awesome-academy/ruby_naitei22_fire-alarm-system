@@ -77,7 +77,7 @@ class Api::V1::SensorsController < Api::V1::BaseController
     if @sensor.destroy
       render_success({message: t(".success"), sensor: @sensor}, :ok)
     else
-      render json: {errors: @sensor.errors.full_messages},
+      render json: {errors: t(".failed")},
              status: :unprocessable_entity
     end
   end
@@ -88,17 +88,11 @@ class Api::V1::SensorsController < Api::V1::BaseController
     @sensor = Sensor.find_by(id: params[:id])
     return if @sensor.present?
 
-    render json: {error: t(".sensor_not_found")}, status: :not_found
+    render json: {error: t("api.v1.sensors.sensor_not_found")},
+           status: :not_found
   end
 
   def sensor_params
     params.require(:sensor).except(:id).permit Sensor::SENSOR_PERMITTED
-  end
-
-  def authorize_admin!
-    return if current_user&.admin?
-
-    render json: {error: t(".forbidden")},
-           status: :forbidden
   end
 end

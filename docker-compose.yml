@@ -6,27 +6,27 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: fire_alarm_development 
+      MYSQL_DATABASE: fire_alarm_development
     ports:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
-    command: --default-authentication-plugin=mysql_native_password 
+    command: --default-authentication-plugin=mysql_native_password
   redis:
     image: redis:7.2-alpine
     container_name: fire_alarm_redis
     restart: always
     ports:
-      - "6379:6379" 
+      - "6379:6379"
     volumes:
       - redis_data:/data
-  api: 
+  api:
     build:
-      context: . 
+      context: .
       dockerfile: Dockerfile
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -b 0.0.0.0"
     volumes:
-      - .:/app 
+      - .:/app
     ports:
       - "3000:3000"
     depends_on:
@@ -52,21 +52,23 @@ services:
       dockerfile: Dockerfile
     container_name: fire_alarm_client_nuxt
     ports:
-      - "8080:3000" 
+      - "8080:3000"
     volumes:
-      - ./nuxt-client:/app 
-      - /app/node_modules 
+      - ./nuxt-client:/app
+      - /app/node_modules
     environment:
-      - NUXT_PUBLIC_API_BASE=http://localhost:3000/api/v1 
+      - NUXT_PUBLIC_API_BASE=http://localhost:3000/api/v1
     depends_on:
       - api
   ai_service:
     build:
-      context: ./fire-detection-ai-service 
+      context: ./fire-detection-ai-service
       dockerfile: Dockerfile
     container_name: fire_ai_service
+    volumes:
+      - ./fire-detection-ai-service/fire_detection_model.h5:/app/fire_detection_model.h5
     ports:
-      - "5001:5001" 
+      - "5001:5001"
     environment:
       - PORT=5001
     restart: unless-stopped

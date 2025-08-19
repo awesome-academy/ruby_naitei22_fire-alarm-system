@@ -3,7 +3,7 @@ class Sensor < ApplicationRecord
 
   belongs_to :zone, counter_cache: true
   has_many :sensor_logs, dependent: :destroy
-  has_many :alerts, dependent: :nullify
+  has_many :alerts, as: :owner, dependent: :destroy
 
   # rubocop:disable Rails/HasManyOrHasOneDependent
   has_one :latest_log, ->{newest}, class_name: SensorLog.name
@@ -17,7 +17,7 @@ class Sensor < ApplicationRecord
 
   validates :name, presence: true
   validates :location, presence: true
-  validates :status, presence: true
+  validates :status, inclusion: {in: statuses.keys}
 
   scope :newest, ->{order(created_at: :desc)}
   scope :by_zone, ->(zone_id){where(zone_id:) if zone_id.present?}
