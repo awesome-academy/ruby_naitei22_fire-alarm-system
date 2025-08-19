@@ -19,7 +19,7 @@ module Alerts
                  log_id: log.id,
                  sensor_id: @sensor.id)
         )
-
+        broadcast_new_log(log)
         process_alert(log)
       end
     rescue StandardError => e
@@ -31,6 +31,23 @@ module Alerts
     end
 
     private
+
+    def broadcast_new_log log
+      payload = {
+        id: log.id,
+        sensor_id: log.sensor_id,
+        temperature: log.temperature,
+        humidity: log.humidity,
+        created_at: log.created_at.iso8601,
+        sensor: {
+          id: @sensor.id,
+          name: @sensor.name,
+          status: @sensor.status
+        }
+      }
+      ActionCable.server.broadcast("sensor_logs_channel", payload)
+      Rails.logger.info "Broadcasted sensor ##{log.id}"
+    end
 
     def process_alert log
       return unless trigger_condition?(log)
@@ -53,6 +70,7 @@ module Alerts
 
       if existing_alert
         existing_alert.update!(message: alert_message)
+        broadcast_alert(existing_alert)
       else
         alert = Alert.create!(
           message: alert_message,
@@ -61,8 +79,22 @@ module Alerts
           zone_id: @sensor.zone_id,
           via_email: true
         )
+        broadcast_alert(alert)
         send_alert_emails(alert)
       end
+    end
+
+    def broadcast_alert alert
+      payload = {
+        id: alert.id,
+        message: alert.message,
+        origin: alert.origin,
+        status: alert.status,
+        zone_name: alert.zone.name,
+        created_at: alert.created_at.iso8601
+      }
+      ActionCable.server.broadcast("alerts_channel", payload)
+      Rails.logger.info "Broadcasted new alert ##{alert.id} to alerts_channel"
     end
 
     def trigger_condition? log
