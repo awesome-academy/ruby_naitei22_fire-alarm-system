@@ -13,6 +13,8 @@ en:
   api:
     v1:
       cameras:
+        index: 
+          success: "Cameras retrieved successfully."
         not_found: "Camera with ID %{id} not found."
         create:
           success: "Camera created successfully."
@@ -24,3 +26,4 @@ en:
           error: "Could not fetch camera statistics."
         capture_and_upload_snapshot:
           success: "Snapshot captured and uploaded successfully."
+          error: "Failed to capture or upload snapshot."
