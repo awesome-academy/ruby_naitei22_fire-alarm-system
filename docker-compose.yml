@@ -52,7 +52,7 @@ services:
       dockerfile: Dockerfile
     container_name: fire_alarm_client_nuxt
     ports:
-      - "8080:3000" 
+      - "8000:3000" 
     volumes:
       - ./nuxt-client:/app 
       - /app/node_modules 

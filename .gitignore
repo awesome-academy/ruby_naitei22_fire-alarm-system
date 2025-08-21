@@ -55,3 +55,7 @@
 # Ignore large model files
 *.h5
 *.hdf5
+
+/spec/examples.txt
+/coverage/
+/tmp/rubycov/
