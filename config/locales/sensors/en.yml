@@ -13,6 +13,7 @@ en:
           success: "Update sensor success!"
         destroy:
           success: "Delete sensor success!"
+          failed: "Delete sensor failed!"
         bulk:
           error: "Bulk sensors failed"
           success: "Bulk %{count} sensors successfully"

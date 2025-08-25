@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_08_16_095443) do
+ActiveRecord::Schema[7.0].define(version: 2025_08_21_042837) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -159,7 +159,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_16_095443) do
   add_foreign_key "alerts", "zones"
   add_foreign_key "cameras", "zones"
   add_foreign_key "invitations", "users"
-  add_foreign_key "sensor_logs", "sensors"
+  add_foreign_key "sensor_logs", "sensors", on_delete: :cascade
   add_foreign_key "sensors", "zones"
   add_foreign_key "tokens", "users"
   add_foreign_key "users", "users", column: "admin_id"

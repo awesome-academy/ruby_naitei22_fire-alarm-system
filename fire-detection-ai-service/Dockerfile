@@ -4,13 +4,13 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
     libxrender-dev \
- && apt-get clean \
- && rm -rf /var/lib/apt/lists/*
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt ./
 
@@ -18,7 +18,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
 COPY model_server.py ./
-COPY fire_detection_model.h5 ./
+#COPY fire_detection_model.h5 ./
 
 ENV MODEL_PATH=/app/fire_detection_model.h5
 ENV IMG_SIZE=256
