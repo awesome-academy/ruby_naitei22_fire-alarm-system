@@ -58,6 +58,7 @@ gem "httparty"
 gem "rack-cors"
 gem "sidekiq"
 gem "sidekiq-cron"
+gem "streamio-ffmpeg"
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html
   gem "debug", platforms: %i(mri mingw x64_mingw)
