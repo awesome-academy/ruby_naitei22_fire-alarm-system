@@ -12,6 +12,7 @@ RUN apt-get update -qq && apt-get install -y \
     yarn \
     tzdata \
     dos2unix \
+    ffmpeg \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

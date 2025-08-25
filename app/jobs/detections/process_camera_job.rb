@@ -8,7 +8,7 @@ module Detections
       @camera = Camera.find_by(id: camera_id)
       return unless @camera
 
-      snapshot_result = Snapshots::FakeCaptureService.new.call
+      snapshot_result = capture_snapshot
       unless snapshot_result.success?
         return handle_error("Snapshot failed: #{snapshot_result.error}")
       end
@@ -25,6 +25,19 @@ module Detections
     end
 
     private
+
+    def capture_snapshot
+      live_result = Snapshots::LiveCaptureService.new(camera: @camera).call
+      return live_result if live_result.success?
+
+      error_message = <<~MSG.squish
+        LiveCaptureService failed for camera ##{@camera.id}:
+        #{live_result.error}
+      MSG
+      Rails.logger.warn(error_message)
+
+      Snapshots::FakeCaptureService.new.call
+    end
 
     def handle_detection prediction, snapshot_path
       return unless fire_detected?(prediction)
