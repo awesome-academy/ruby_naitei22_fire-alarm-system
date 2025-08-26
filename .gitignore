@@ -55,3 +55,4 @@
 # Ignore large model files
 *.h5
 *.hdf5
+/coverage
