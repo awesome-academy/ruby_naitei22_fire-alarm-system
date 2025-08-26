@@ -6,6 +6,9 @@ class Zone < ApplicationRecord
   has_many :cameras, dependent: :destroy
   has_many :alerts, dependent: :destroy
 
+  validates :name, presence: true
+  validates :city, presence: true
+
   scope :sorted_by_name, ->{order(name: :asc)}
 
   scope :filter_and_sort, lambda {|params|
@@ -13,11 +16,14 @@ class Zone < ApplicationRecord
     result = result.sorted_by_name if params[:sort] == SORT_BY_NAME
     result
   }
-  scope :with_location, (lambda do
-    where.not(city: nil)
-         .or(where.not(latitude: nil, longitude: nil))
+
+  scope(:with_location, lambda do
+    where.not(city: [nil, ""]).or(
+      where.not(latitude: nil).where.not(longitude: nil)
+    )
   end)
-  scope :with_active_sensors, (lambda do
+
+  scope(:with_active_sensors, lambda do
     joins(:sensors).where(sensors: {status: :active})
   end)
 end

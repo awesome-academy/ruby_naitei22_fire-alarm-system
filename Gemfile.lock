@@ -115,6 +115,8 @@ GEM
       irb (>= 1.5.0)
       reline (>= 0.3.1)
     deep_merge (1.2.2)
+    diff-lcs (1.6.2)
+    docile (1.4.1)
     dotenv (3.1.8)
     dotenv-rails (3.1.8)
       dotenv (= 3.1.8)
@@ -122,6 +124,11 @@ GEM
     erubi (1.12.0)
     et-orbi (1.2.11)
       tzinfo
+    factory_bot (6.5.5)
+      activesupport (>= 6.1.0)
+    factory_bot_rails (6.5.0)
+      factory_bot (~> 6.5)
+      railties (>= 6.1.0)
     faker (3.5.2)
       i18n (>= 1.8.11, < 2)
     faraday (2.13.4)
@@ -255,6 +262,23 @@ GEM
     reline (0.3.7)
       io-console (~> 0.5)
     rexml (3.2.6)
+    rspec-core (3.13.5)
+      rspec-support (~> 3.13.0)
+    rspec-expectations (3.13.5)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.13.0)
+    rspec-mocks (3.13.5)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.13.0)
+    rspec-rails (7.1.1)
+      actionpack (>= 7.0)
+      activesupport (>= 7.0)
+      railties (>= 7.0)
+      rspec-core (~> 3.13)
+      rspec-expectations (~> 3.13)
+      rspec-mocks (~> 3.13)
+      rspec-support (~> 3.13)
+    rspec-support (3.13.5)
     rubocop (1.56.0)
       base64 (~> 0.1.1)
       json (~> 2.3)
@@ -292,6 +316,12 @@ GEM
       fugit (~> 1.8, >= 1.11.1)
       globalid (>= 1.0.1)
       sidekiq (>= 6.5.0)
+    simplecov (0.22.0)
+      docile (~> 1.1)
+      simplecov-html (~> 0.11)
+      simplecov_json_formatter (~> 0.1)
+    simplecov-html (0.13.2)
+    simplecov_json_formatter (0.1.4)
     sprockets (4.2.0)
       concurrent-ruby (~> 1.0)
       rack (>= 2.2.4, < 4)
@@ -316,6 +346,7 @@ GEM
       nokogiri (~> 1.6)
       rubyzip (>= 1.3.0)
       selenium-webdriver (~> 4.0, < 4.11)
+    webrick (1.9.1)
     websocket (1.2.9)
     websocket-driver (0.7.6)
       websocket-extensions (>= 0.1.0)
@@ -337,6 +368,7 @@ DEPENDENCIES
   config
   debug
   dotenv-rails
+  factory_bot_rails
   faker
   httparty
   importmap-rails
@@ -351,17 +383,20 @@ DEPENDENCIES
   rack-cors
   rails (~> 7.0.5)
   redis (~> 4.0)
+  rspec-rails
   rubocop (~> 1.26)
   rubocop-checkstyle_formatter
   rubocop-rails (~> 2.14.0)
   selenium-webdriver
   sidekiq
   sidekiq-cron
+  simplecov
   sprockets-rails
   stimulus-rails
   turbo-rails
   tzinfo-data
   webdrivers
+  webrick
 
 RUBY VERSION
    ruby 3.2.2p53
