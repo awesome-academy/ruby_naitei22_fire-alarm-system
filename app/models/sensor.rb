@@ -3,7 +3,7 @@ class Sensor < ApplicationRecord
 
   belongs_to :zone, counter_cache: true
   has_many :sensor_logs, dependent: :destroy
-  has_many :alerts, dependent: :nullify
+  has_many :alerts, as: :owner, dependent: :nullify
 
   # rubocop:disable Rails/HasManyOrHasOneDependent
   has_one :latest_log, ->{newest}, class_name: SensorLog.name
