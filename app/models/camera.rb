@@ -6,7 +6,7 @@ class Camera < ApplicationRecord
   enum status: {online: 0, offline: 1, recording: 2, error: 3}
   after_initialize :set_default_status, if: :new_record?
   belongs_to :zone, counter_cache: true
-  has_many :alerts, as: :owner, dependent: :nullify
+  has_many :alerts, as: :owner, dependent: :destroy
 
   scope :newest, ->{order(created_at: :desc)}
   scope :online_and_detecting, ->{where(is_detecting: true, status: :online)}

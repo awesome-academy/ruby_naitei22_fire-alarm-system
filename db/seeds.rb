@@ -1,13 +1,11 @@
 require "faker"
 
 def run_seeds
-  if Rails.env.production?
-    abort("Refusing to run seeds in production environment.")
-  end
-
+  abort("Refusing to run seeds in production environment.") if Rails.env.production?
   cleanup_database
   create_users_with_faker
-  create_zones_and_sensors_and_cameras_with_faker
+  create_demo_zones_and_devices
+  create_random_zones_and_sensors_with_faker
   create_sensor_logs_for_chart
 end
 
@@ -43,9 +41,47 @@ def create_users_with_faker
   @supervisors = User.where(role: :supervisor)
 end
 
-def create_zones_and_sensors_and_cameras_with_faker
-  3.times do |i|
-    zone = Zone.find_or_create_by!(name: "Khu vực #{('A'..'Z').to_a[i]}") do |z|
+def create_demo_zones_and_devices
+  demo_zone = Zone.find_or_create_by!(name: "Khu vực Demo") do |z|
+    z.description = "Khu vực để thử nghiệm camera thật và camera giả lập."
+    z.city = "Hà Nội"
+    z.latitude = 21.028511
+    z.longitude = 105.804817
+    z.user = @supervisors.first || @admin
+  end
+
+  if ENV["LIVE_CAMERA_RTSP_URL"].present?
+    Camera.find_or_create_by!(name: "Camera Live (RTSP)") do |camera|
+      camera.url = ENV.fetch("LIVE_CAMERA_RTSP_URL")
+      camera.status = :online
+      camera.zone = demo_zone
+      camera.is_detecting = true
+    end
+  else
+    puts "Skipping live camera creation: LIVE_CAMERA_RTSP_URL not set in .env"
+  end
+
+  Camera.find_or_create_by!(name: "Camera Giả Lập (Fake URL)") do |camera|
+    camera.url = "rtsp://invalid.stream.url/fake-camera"
+    camera.status = :online
+    camera.zone = demo_zone
+    camera.is_detecting = true
+  end
+
+  2.times do |k|
+    Sensor.find_or_create_by!(name: "Cảm biến Demo - #{k + 1}") do |sensor|
+      sensor.location = Faker::Address.street_address
+      sensor.status = Sensor.statuses.keys.sample
+      sensor.zone = demo_zone
+      sensor.threshold = rand(30..70)
+    end
+  end
+end
+
+def create_random_zones_and_sensors_with_faker
+  2.times do |i|
+    zone_name = "Khu vực Ngẫu nhiên #{('A'..'Z').to_a[i]}"
+    zone = Zone.find_or_create_by!(name: zone_name) do |z|
       z.description = Faker::Lorem.sentence(word_count: 10)
       z.city = Faker::Address.city
       z.latitude = Faker::Address.latitude
@@ -53,26 +89,12 @@ def create_zones_and_sensors_and_cameras_with_faker
       z.user = @supervisors.sample
     end
 
-    # Seed cameras
-    rand(2..4).times do |j|
-      Camera.find_or_create_by!(name: "Camera #{zone.name} - #{j + 1}") do |camera|
-        camera.url = "rtsp://fake.stream.com/#{zone.name.parameterize}/cam#{j + 1}"
-        camera.status = Camera.statuses.keys.sample
-        camera.zone = zone
-        camera.is_detecting = [true, false].sample
-      end
-    end
-
-    # Seed sensors
-    rand(2..5).times do |k|
+    rand(2..3).times do |k|
       Sensor.find_or_create_by!(name: "Cảm biến #{zone.name} - #{k + 1}") do |sensor|
         sensor.location = Faker::Address.street_address
         sensor.status = Sensor.statuses.keys.sample
         sensor.zone = zone
         sensor.threshold = rand(30..70)
-        sensor.sensitivity = rand(1..10)
-        sensor.latitude = Faker::Address.latitude
-        sensor.longitude = Faker::Address.longitude
       end
     end
   end
@@ -85,7 +107,6 @@ def create_sensor_logs_for_chart
 
   Sensor.find_each do |sensor|
     current_time = start_time
-
     while current_time <= end_time
       SensorLog.create!(
         sensor: sensor,
@@ -94,11 +115,9 @@ def create_sensor_logs_for_chart
         created_at: current_time,
         updated_at: current_time
       )
-
       current_time += interval
     end
   end
-
   puts "Sensor logs seeded!"
 end
 

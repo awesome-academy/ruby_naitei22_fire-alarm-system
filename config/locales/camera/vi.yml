@@ -13,6 +13,8 @@ vi:
   api:
     v1:
       cameras:
+        index: 
+          success: "Đã lấy danh sách máy quay thành công."
         not_found: "Không tìm thấy máy quay với ID %{id}."
         create:
           success: "Tạo máy quay thành công."
@@ -24,3 +26,4 @@ vi:
           error: "Không thể lấy thông số máy quay."
         capture_and_upload_snapshot:
           success: "Đã chụp và tải ảnh lên thành công."
+          error: "Không thể chụp hoặc tải ảnh lên."
