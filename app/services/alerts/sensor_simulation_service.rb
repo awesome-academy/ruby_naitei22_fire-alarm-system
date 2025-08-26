@@ -81,6 +81,7 @@ module Alerts
         )
         broadcast_alert(alert)
         send_alert_emails(alert)
+        Notifications::TelegramService.new(alert:).call
       end
     end
 

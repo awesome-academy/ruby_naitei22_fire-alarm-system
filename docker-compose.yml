@@ -38,7 +38,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: bundle exec sidekiq
+    command: bundle exec sidekiq -q default -q notifications
     volumes:
       - .:/app
     depends_on:
