@@ -1,6 +1,7 @@
 module Cameras
   class SnapshotService
-    Result = Struct.new(:success?, :camera, :error, keyword_init: true)
+    Result = Struct.new(:success?, :camera, :error, :status_code,
+                        keyword_init: true)
 
     def initialize camera:
       @camera = camera
@@ -10,17 +11,19 @@ module Cameras
       capture_result = Snapshots::FakeCaptureService.new.call
       unless capture_result.success?
         return Result.new(success?: false,
-                          error: capture_result.error)
+                          error: capture_result.error,
+                          status_code: :internal_server_error)
       end
 
       upload_result = upload_to_cloudinary(capture_result.file_path)
       unless upload_result.success?
         return Result.new(success?: false,
-                          error: upload_result.error)
+                          error: upload_result.error,
+                          status_code: :internal_server_error)
       end
 
       if @camera.update(last_snapshot_url: upload_result.url)
-        Result.new(success?: true, camera: @camera)
+        Result.new(success?: true, camera: @camera, status_code: :ok)
       else
         Result.new(
           success?: false,
