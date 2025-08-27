@@ -43,7 +43,7 @@ class Api::V1::SensorsController < Api::V1::BaseController
 
   # GET /api/sensors
   def index
-    sensor_scope = @sensors.includes(:zone)
+    sensor_scope = filtered_sensors
     @pagy, sensors = pagy(sensor_scope,
                           items: params[:limit] || Settings.digits.digit_20)
     render_paginated_response(sensors, SensorSerializer, t(".success"))
@@ -77,6 +77,21 @@ class Api::V1::SensorsController < Api::V1::BaseController
   end
 
   private
+
+  def ransack_params
+    return params[:q] unless params[:q].is_a?(String) && params[:q].present?
+
+    JSON.parse(params[:q])
+  rescue JSON::ParserError
+    {}
+  end
+
+  def filtered_sensors
+    @q = @sensors.ransack(ransack_params)
+    @q.result(distinct: true)
+      .includes(Sensor::PRELOAD)
+      .newest
+  end
 
   def sensor_params
     params.require(:sensor).permit(Sensor::SENSOR_PERMITTED)

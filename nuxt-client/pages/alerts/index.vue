@@ -58,14 +58,20 @@ const router = useRouter();
 const isUpdatingStatus = ref(false);
 
 const queryParams = computed(() => {
-  const params: Record<string, any> = {
-    page: parseInt(route.query.page as string || '1', 10),
-    limit: parseInt(route.query.limit as string || '10', 10),
+  const { page = '1', limit = '10', ...restQuery } = route.query;
+  const baseParams: Record<string, any> = {
+    page: parseInt(page as string, 10),
+    limit: parseInt(limit as string, 10),
   };
-  if (route.query.status) params.status = route.query.status;
-  if (route.query.startDate) params.startDate = route.query.startDate;
-  if (route.query.endDate) params.endDate = route.query.endDate;
-  return params;
+  const ransackParams: Record<string, any> = {};
+  for (const key in restQuery) {
+    ransackParams[key] = restQuery[key];
+  }
+  
+  if (Object.keys(ransackParams).length > 0) {
+    baseParams.q = ransackParams;
+  }
+  return baseParams;
 });
 
 const { data: paginatedResponse, pending, error, refresh } = useAsyncData(

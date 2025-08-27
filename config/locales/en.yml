@@ -17,6 +17,8 @@ en:
           success: "Invitation code created successfully."
       base_controller:
         success: "Operation was successful."
+        errors:
+          invalid_query_format: "The search query parameter (q) is not valid JSON."
       authentication_controller:
         update_role:
           success: "User role updated successfully."

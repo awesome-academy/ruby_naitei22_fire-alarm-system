@@ -6,7 +6,15 @@ class Api::V1::CamerasController < Api::V1::BaseController
 
   # GET /api/v1/cameras
   def index
-    @pagy, cameras = pagy(@cameras.includes(:zone).newest)
+    ransack_params = if params[:q].is_a?(String) && params[:q].present?
+                       JSON.parse(params[:q])
+                     else
+                       params[:q]
+                     end
+    @q = @cameras.ransack(ransack_params)
+
+    cameras_scope = @q.result(distinct: true).includes(:zone).newest
+    @pagy, cameras = pagy(cameras_scope)
     render_paginated_response(cameras, CameraSerializer, t(".success"))
   end
 

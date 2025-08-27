@@ -11,6 +11,8 @@
             </button>
         </div>
 
+        <ZonesZoneFilter @filter="applyFilters" />
+
         <div v-if="pending && !zones" class="text-center py-20">
             <AppSpinner /> Loading zones...
         </div>
@@ -20,6 +22,14 @@
         </div>
         <div v-else>
             <ZonesZoneTable :zones="zones ?? []" :loading="pending" @edit="openEditModal" @delete="openDeleteModal" />
+            <UiPaginationControls
+                v-if="totalZones > (queryParams.limit || 10)"
+                class="mt-4"
+                :current-page="queryParams.page"
+                :items-per-page="queryParams.limit || 10"
+                :total-items="totalZones"
+                @page-change="handlePageChange"
+            />
         </div>
         
         <div v-if="actionError" class="error-alert mt-4">
@@ -61,7 +71,7 @@
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue';
 import { useApi } from '~/composables/useApi';
-import { useAsyncData } from '#app';
+import { useAsyncData, useRoute, useRouter } from '#app';
 import ZonesZoneTable from '~/components/zones/ZoneTable.vue';
 import ZonesZoneForm from '~/components/zones/ZoneForm.vue';
 import AppModal from '~/components/ui/AppModal.vue';
@@ -69,6 +79,8 @@ import AppSpinner from '~/components/ui/AppSpinner.vue';
 import { XCircleIcon, PlusIcon } from '@heroicons/vue/20/solid';
 import type { Zone } from '~/types/api';
 import Swal from 'sweetalert2';
+import ZonesZoneFilter from '~/components/zones/ZoneFilter.vue';
+import UiPaginationControls from '~/components/ui/PaginationControls.vue';
 
 definePageMeta({
     layout: 'default',
@@ -76,14 +88,41 @@ definePageMeta({
 });
 
 const api = useApi();
+const route = useRoute();
+const router = useRouter();
+
+const queryParams = computed(() => {
+  const { page = '1', limit = '10', ...restQuery } = route.query;
+  const baseParams: Record<string, any> = {
+    page: parseInt(page as string, 10),
+    limit: parseInt(limit as string, 10),
+  };
+  const ransackParams: Record<string, any> = {};
+  for (const key in restQuery) {
+    ransackParams[key] = restQuery[key];
+  }
+  if (Object.keys(ransackParams).length > 0) {
+    baseParams.q = ransackParams;
+  }
+  return baseParams;
+});
 
 const { data: paginatedResponse, pending, error, refresh } = useAsyncData(
     'zones-list',
-    () => api.zones.getAll(),
-    { lazy: true, server: false }
+    () => api.zones.getAll(queryParams.value),
+    { lazy: true, server: false, watch: [queryParams] }
 );
 
 const zones = computed(() => paginatedResponse.value?.data || []);
+const totalZones = computed(() => paginatedResponse.value?.pagy?.total_count || 0);
+
+const applyFilters = (filters: Record<string, string>) => {
+  router.push({ query: { ...filters, page: '1' } });
+};
+
+const handlePageChange = (newPage: number) => {
+  router.push({ query: { ...route.query, page: newPage.toString() } });
+};
 
 const actionError = ref<string | null>(null);
 
