@@ -15,6 +15,14 @@ class Camera < ApplicationRecord
   validates :url, presence: true
   validates :zone_id, presence: true
 
+  def self.ransackable_attributes _auth_object = nil
+    %w(name status is_detecting created_at)
+  end
+
+  def self.ransackable_associations _auth_object = nil
+    %w(zone)
+  end
+
   private
   def set_default_status
     self.status ||= :online

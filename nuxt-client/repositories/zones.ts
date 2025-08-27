@@ -1,9 +1,13 @@
 import type { $Fetch } from 'ofetch';
 import type { Zone, ZoneWithDetails, PaginatedResponse } from '~/types/api';
+import qs from 'qs';
 
 export default ($fetch: $Fetch) => ({
     getAll(params: Record<string, any> = {}) {
-        return $fetch<PaginatedResponse<Zone>>('/zones', { params });
+        return $fetch<PaginatedResponse<Zone>>('/zones', { 
+            params,
+            paramsSerializer: (p) => qs.stringify(p, { encode: false }),
+        });
     },
     getById(id: string) {
         return $fetch<ZoneWithDetails>(`/zones/${id}`);

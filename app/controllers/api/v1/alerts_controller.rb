@@ -7,15 +7,14 @@ class Api::V1::AlertsController < Api::V1::BaseController
 
   # GET /api/v1/alerts
   def index
-    alerts_scope = @alerts.includes(Alert::ALERTS_PRELOAD).newest
-    alerts_scope = alerts_scope.with_status(params[:status])
-    alerts_scope = alerts_scope.in_date_range(params[:start_date],
-                                              params[:end_date])
-
+    alerts_scope = filtered_alerts
     items_per_page = params.fetch(:limit, DEFAULT_PER_PAGE).to_i
     @pagy, alerts = pagy(alerts_scope, items: items_per_page)
 
     render_paginated_response(alerts, AlertSerializer, t(".success"))
+  rescue JSON::ParserError
+    render_error(t("api.v1.base_controller.errors.invalid_query_format"),
+                 :bad_request)
   end
 
   # GET /api/v1/alerts/stats
@@ -62,6 +61,19 @@ class Api::V1::AlertsController < Api::V1::BaseController
   end
 
   private
+
+  def ransack_params
+    return params[:q] unless params[:q].is_a?(String) && params[:q].present?
+
+    JSON.parse(params[:q])
+  end
+
+  def filtered_alerts
+    @q = @alerts.ransack(ransack_params)
+    @q.result(distinct: true)
+      .includes(Alert::ALERTS_PRELOAD)
+      .newest
+  end
 
   def alert_params
     params.require("alert").permit(Alert::ALERT_PERMIT)

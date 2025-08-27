@@ -3,12 +3,18 @@
 class Api::V1::ZonesController < Api::V1::BaseController
   before_action :authenticate_request!
   load_and_authorize_resource
-  PERMIT = %i(name description city latitude longitude).freeze
+  PERMIT = %i(name description city latitude longitude user_id).freeze
 
   # GET /api/v1/zones
   def index
-    zones_scope = @zones.filter_and_sort(params)
+    ransack_params = if params[:q].is_a?(String) && params[:q].present?
+                       JSON.parse(params[:q])
+                     else
+                       params[:q]
+                     end
+    @q = @zones.ransack(ransack_params)
 
+    zones_scope = @q.result(distinct: true)
     @pagy, zones = pagy(zones_scope)
     render_paginated_response(zones, ZoneSerializer, t(".success"))
   end
@@ -23,7 +29,9 @@ class Api::V1::ZonesController < Api::V1::BaseController
 
   # POST /api/v1/zones
   def create
-    @zone.user = current_user
+    unless current_user.admin? && zone_params[:user_id].present?
+      @zone.user = current_user
+    end
 
     if @zone.save
       render_success({

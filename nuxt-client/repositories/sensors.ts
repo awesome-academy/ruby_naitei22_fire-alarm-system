@@ -1,9 +1,13 @@
 import type { $Fetch } from 'ofetch';
 import type { Sensor, SensorWithDetails, PaginatedResponse } from '~/types/api';
+import qs from 'qs';
 
 export default ($fetch: $Fetch) => ({
     getAll(params: Record<string, any> = {}) {
-        return $fetch<PaginatedResponse<SensorWithDetails>>('/sensors', { params });
+        return $fetch<PaginatedResponse<SensorWithDetails>>('/sensors', {
+            params,
+            paramsSerializer: (p) => qs.stringify(p, { encode: false }),
+        });
     },
 
     getById(id: string) {

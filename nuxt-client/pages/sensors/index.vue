@@ -11,6 +11,8 @@
             </NuxtLink>
         </div>
 
+        <SensorsSensorFilter @filter="applyFilters" />
+
         <div v-if="pending && !sensors" class="text-center py-20">
             <AppSpinner class="w-10 h-10 inline-block" />
             <p class="text-gray-400 mt-3">Loading sensor list...</p>
@@ -28,6 +30,14 @@
                 :loading="pending"
                 @delete="handleDeleteSensor"
                 @view-details="handleViewDetails"
+            />
+            <UiPaginationControls
+                v-if="totalSensors > (queryParams.limit || 20)"
+                class="mt-4"
+                :current-page="queryParams.page"
+                :items-per-page="queryParams.limit || 20"
+                :total-items="totalSensors"
+                @page-change="handlePageChange"
             />
         </div>
 
@@ -58,7 +68,7 @@
 <script setup lang="ts">
 import { ref, nextTick, computed } from 'vue';
 import { useApi } from '~/composables/useApi';
-import { useAsyncData } from '#app';
+import { useAsyncData, useRoute, useRouter } from '#app';
 import Swal from 'sweetalert2';
 import SensorsSensorTable from '~/components/sensors/SensorTable.vue';
 import AppModal from '~/components/ui/AppModal.vue';
@@ -66,6 +76,8 @@ import AppSpinner from '~/components/ui/AppSpinner.vue';
 import SensorsSensorDetailsModal from '~/components/sensors/SensorDetailsModal.vue';
 import { XCircleIcon, Cog6ToothIcon } from '@heroicons/vue/20/solid';
 import type { SensorWithDetails } from '~/types/api';
+import SensorsSensorFilter from '~/components/sensors/SensorFilter.vue';
+import UiPaginationControls from '~/components/ui/PaginationControls.vue';
 
 definePageMeta({
     layout: 'default',
@@ -73,18 +85,46 @@ definePageMeta({
 });
 
 const api = useApi();
+const route = useRoute();
+const router = useRouter();
 const showDeleteConfirm = ref(false);
 const sensorToDelete = ref<SensorWithDetails | null>(null);
 const deleting = ref(false);
 const showDetailsModal = ref(false);
 const selectedSensorId = ref<string | null>(null);
 
+const queryParams = computed(() => {
+  const { page = '1', limit = '20', ...restQuery } = route.query;
+  const baseParams: Record<string, any> = {
+    page: parseInt(page as string, 10),
+    limit: parseInt(limit as string, 10),
+  };
+  const ransackParams: Record<string, any> = {};
+  for (const key in restQuery) {
+    ransackParams[key] = restQuery[key];
+  }
+  if (Object.keys(ransackParams).length > 0) {
+    baseParams.q = ransackParams;
+  }
+  return baseParams;
+});
+
 const { data: paginatedResponse, pending, error, refresh } = useAsyncData(
     'sensors-list',
-    () => api.sensors.getAll({ fields: 'id,name,status,zone_id' }), 
-    { lazy: true, server: false }
+    () => api.sensors.getAll(queryParams.value), 
+    { watch: [queryParams], lazy: true, server: false } 
 );
 const sensors = computed(() => paginatedResponse.value?.data || []);
+const totalSensors = computed(() => paginatedResponse.value?.pagy?.total_count || 0);
+
+const applyFilters = (filters: Record<string, string>) => {
+  const newQuery = { ...filters, page: '1' };
+  router.push({ query: newQuery });
+};
+
+const handlePageChange = (newPage: number) => {
+  router.push({ query: { ...route.query, page: newPage.toString() } });
+};
 
 const handleDeleteSensor = (sensorId: string) => {
     const sensor = sensors.value?.find((s) => s.id === sensorId);

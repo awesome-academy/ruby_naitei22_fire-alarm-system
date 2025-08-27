@@ -8,7 +8,15 @@ class Api::V1::UsersController < Api::V1::BaseController
 
   # GET /api/v1/users
   def index
-    @pagy, users = pagy(@users.newest)
+    ransack_params = if params[:q].is_a?(String) && params[:q].present?
+                       JSON.parse(params[:q])
+                     else
+                       params[:q]
+                     end
+    @q = @users.ransack(ransack_params)
+
+    users_scope = @q.result(distinct: true).newest
+    @pagy, users = pagy(users_scope)
     render_paginated_response(users, UserSerializer, t(".success"))
   end
 

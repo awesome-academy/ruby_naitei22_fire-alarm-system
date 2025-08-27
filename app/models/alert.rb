@@ -33,6 +33,14 @@ class Alert < ApplicationRecord
     end
   }
 
+  def self.ransackable_attributes _auth_object = nil
+    %w(id message origin status created_at updated_at)
+  end
+
+  def self.ransackable_associations _auth_object = nil
+    %w(zone owner user)
+  end
+
   def self.pending_count
     pending.count
   end

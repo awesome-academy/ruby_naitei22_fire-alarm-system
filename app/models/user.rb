@@ -39,6 +39,14 @@ class User < ApplicationRecord
   validate :admin_must_not_have_an_admin
   validate :supervisor_must_have_an_admin, on: :create
 
+  def self.ransackable_attributes _auth_object = nil
+    %w(name email phone role is_active created_at)
+  end
+
+  def self.ransackable_associations _auth_object = nil
+    %w(admin supervisors)
+  end
+
   def generate_password_reset_token!
     self.password_reset_token = SecureRandom.urlsafe_base64
     self.password_reset_sent_at = Time.current
