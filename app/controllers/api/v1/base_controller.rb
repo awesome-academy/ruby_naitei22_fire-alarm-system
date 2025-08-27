@@ -11,10 +11,15 @@ class Api::V1::BaseController < ApplicationController
   rescue_from NotAuthenticatedError, with: :handle_authentication_error
   rescue_from NotAuthorizedError, with: :handle_authorization_error
   rescue_from ActiveRecord::RecordNotFound, with: :handle_not_found
+  rescue_from CanCan::AccessDenied, with: :handle_authorization_error
 
   before_action :set_locale
 
   private
+
+  def current_ability
+    @current_ability ||= Ability.new(current_user)
+  end
 
   attr_reader :current_user
 
