@@ -11,6 +11,8 @@
             </NuxtLink>
         </div>
 
+        <CamerasCameraFilter @filter="applyFilters" />
+
         <div v-if="pending && !cameras" class="text-center py-20">
             <AppSpinner class="w-10 h-10 inline-block" />
             <p class="text-gray-400 mt-3">Loading camera list...</p>
@@ -29,6 +31,14 @@
                 @delete="confirmDeleteCamera"
                 @edit="editCamera"
                 @view="viewCameraStream"
+            />
+            <UiPaginationControls
+                v-if="totalCameras > (queryParams.limit || 10)"
+                class="mt-4"
+                :current-page="queryParams.page"
+                :items-per-page="queryParams.limit || 10"
+                :total-items="totalCameras"
+                @page-change="handlePageChange"
             />
         </div>
 
@@ -52,7 +62,7 @@
 
 <script setup lang="ts">
 import { ref, nextTick, computed } from 'vue';
-import { navigateTo, useAsyncData } from '#app';
+import { navigateTo, useAsyncData, useRoute, useRouter } from '#app';
 import { useApi } from '~/composables/useApi';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
@@ -61,6 +71,8 @@ import AppModal from '~/components/ui/AppModal.vue';
 import AppSpinner from '~/components/ui/AppSpinner.vue';
 import { PlusIcon, XCircleIcon } from '@heroicons/vue/20/solid';
 import type { Camera } from '~/types/api';
+import CamerasCameraFilter from '~/components/cameras/CameraFilter.vue';
+import UiPaginationControls from '~/components/ui/PaginationControls.vue';
 
 definePageMeta({
     layout: 'default',
@@ -68,17 +80,44 @@ definePageMeta({
 });
 
 const api = useApi();
+const route = useRoute();
+const router = useRouter();
 const showDeleteConfirm = ref(false);
 const cameraToDelete = ref<Camera | null>(null);
 const deleting = ref(false);
 
+const queryParams = computed(() => {
+  const { page = '1', limit = '10', ...restQuery } = route.query;
+  const baseParams: Record<string, any> = {
+    page: parseInt(page as string, 10),
+    limit: parseInt(limit as string, 10),
+  };
+  const ransackParams: Record<string, any> = {};
+  for (const key in restQuery) {
+    ransackParams[key] = restQuery[key];
+  }
+  if (Object.keys(ransackParams).length > 0) {
+    baseParams.q = ransackParams;
+  }
+  return baseParams;
+});
+
 const { data: paginatedResponse, pending, error, refresh } = useAsyncData(
     'cameras-list',
-    () => api.cameras.getAll(),
-    { server: false, lazy: true }
+    () => api.cameras.getAll(queryParams.value),
+    { server: false, lazy: true, watch: [queryParams] }
 );
 
 const cameras = computed(() => paginatedResponse.value?.data || []);
+const totalCameras = computed(() => paginatedResponse.value?.pagy?.total_count || 0);
+
+const applyFilters = (filters: Record<string, string>) => {
+  router.push({ query: { ...filters, page: '1' } });
+};
+
+const handlePageChange = (newPage: number) => {
+  router.push({ query: { ...route.query, page: newPage.toString() } });
+};
 
 const editCamera = (camera: Camera) => {
     navigateTo(`/cameras/config?edit=${camera.id}`);

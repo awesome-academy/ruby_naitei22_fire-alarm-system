@@ -3,7 +3,7 @@ class Sensor < ApplicationRecord
 
   belongs_to :zone, counter_cache: true
   has_many :sensor_logs, dependent: :destroy
-  has_many :alerts, dependent: :destroy
+  has_many :alerts, as: :owner, dependent: :destroy
 
   # rubocop:disable Rails/HasManyOrHasOneDependent
   has_one :latest_log, ->{newest}, class_name: SensorLog.name
@@ -20,6 +20,11 @@ class Sensor < ApplicationRecord
   validates :status, presence: true
 
   scope :newest, ->{order(created_at: :desc)}
-  scope :by_zone, ->(zone_id){where(zone_id:) if zone_id.present?}
-  scope :by_status, ->(status){where(status:) if status.present?}
+  def self.ransackable_attributes _auth_object = nil
+    %w(name location status threshold created_at)
+  end
+
+  def self.ransackable_associations _auth_object = nil
+    %w(zone)
+  end
 end

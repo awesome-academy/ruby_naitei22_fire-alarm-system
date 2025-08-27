@@ -11,6 +11,8 @@
             </button>
         </div>
 
+        <UsersUserFilter @filter="applyFilters" />
+
         <div v-if="pending && !users" class="text-center py-20">
             <AppSpinner class="w-10 h-10 inline-block" />
             <p class="text-gray-400 mt-3">Loading user list...</p>
@@ -91,6 +93,14 @@
                     </tr>
                 </tbody>
             </table>
+            <UiPaginationControls
+                v-if="totalUsers > (queryParams.limit || 10)"
+                class="mt-4"
+                :current-page="queryParams.page"
+                :items-per-page="queryParams.limit || 10"
+                :total-items="totalUsers"
+                @page-change="handlePageChange"
+            />
         </div>
     </div>
 </template>
@@ -98,7 +108,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useApi } from '~/composables/useApi';
-import { useAsyncData } from '#app';
+import { useAsyncData, useRoute, useRouter } from '#app';
 import { useAuth } from '~/composables/useAuth';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
@@ -106,6 +116,8 @@ import type { User, Role } from '~/types/api';
 import { Role as RoleEnum } from '~/types/api';
 import AppSpinner from '~/components/ui/AppSpinner.vue';
 import { EyeIcon, UserMinusIcon, UserPlusIcon, XCircleIcon, PaperAirplaneIcon } from '@heroicons/vue/24/outline';
+import UsersUserFilter from '~/components/users/UserFilter.vue';
+import UiPaginationControls from '~/components/ui/PaginationControls.vue';
 
 definePageMeta({
     layout: 'default',
@@ -113,18 +125,45 @@ definePageMeta({
 });
 
 const api = useApi();
+const route = useRoute();
+const router = useRouter();
 const { user: currentUser } = useAuth();
 const isUpdating = ref<string | null>(null);
 const showDetailsModal = ref(false);
 const selectedUserId = ref<string | null>(null);
 const roles = Object.values(RoleEnum);
 
+const queryParams = computed(() => {
+  const { page = '1', limit = '10', ...restQuery } = route.query;
+  const baseParams: Record<string, any> = {
+    page: parseInt(page as string, 10),
+    limit: parseInt(limit as string, 10),
+  };
+  const ransackParams: Record<string, any> = {};
+  for (const key in restQuery) {
+    ransackParams[key] = restQuery[key];
+  }
+  if (Object.keys(ransackParams).length > 0) {
+    baseParams.q = ransackParams;
+  }
+  return baseParams;
+});
+
 const { data: paginatedResponse, pending, error, refresh } = useAsyncData(
     'users-list',
-    () => api.users.getAll(),
-    { lazy: true, server: false }
+    () => api.users.getAll(queryParams.value),
+    { lazy: true, server: false, watch: [queryParams] }
 );
 const users = computed(() => paginatedResponse.value?.data || []);
+const totalUsers = computed(() => paginatedResponse.value?.pagy?.total_count || 0);
+
+const applyFilters = (filters: Record<string, string>) => {
+  router.push({ query: { ...filters, page: '1' } });
+};
+
+const handlePageChange = (newPage: number) => {
+  router.push({ query: { ...route.query, page: newPage.toString() } });
+};
 
 const confirmRoleChange = (user: User, newRole: Role) => {
     const selectElement = document.getElementById(`role-${user.id}`) as HTMLSelectElement | null;

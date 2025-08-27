@@ -1,10 +1,13 @@
 import type { $Fetch } from 'ofetch';
-import type { User, PaginatedResponse, Role } from '~/types/api';
+import type { User, PaginatedResponse } from '~/types/api';
+import qs from 'qs';
 
 export default ($fetch: $Fetch) => ({
-    getAll() {
+    getAll(params: Record<string, any> = {}) {
         return $fetch<PaginatedResponse<User>>('/users', {
             method: 'GET',
+            params,
+            paramsSerializer: (p) => qs.stringify(p, { encode: false }),
         });
     },
 
