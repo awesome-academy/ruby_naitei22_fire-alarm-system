@@ -44,3 +44,5 @@ en:
       snapshot_header: "Snapshot from camera"
       call_to_action: "Please log in to the system to handle it."
       thank_you: "Thank you."
+  cancan:
+    access_denied: "You are not authorized to perform this action"

@@ -1,18 +1,25 @@
 class Api::V1::SensorLogsController < Api::V1::BaseController
   before_action :authenticate_request!
-  before_action :authorize_admin!
+  load_and_authorize_resource class: "SensorLog",
+                              only: [:index, :show, :destroy]
+
   before_action :set_log, only: [:show, :destroy]
   before_action :validate_sensor_ids, only: [:chart]
   before_action :parse_time_params_before_action, only: [:chart]
+
   DEFAULT_LOGS_LIMIT = 50
+
   # GET /logs/stats
   def stats
+    authorize! :stats, SensorLog
     stats = SensorLogs::LogService.new.get_stats
     render json: stats, status: :ok
   end
 
   # GET /logs/chart
   def chart
+    authorize! :chart, SensorLog
+
     chart_data = SensorLogs::LogService.new.get_chart_data(
       @sensor_ids,
       @start_time,
@@ -23,7 +30,12 @@ class Api::V1::SensorLogsController < Api::V1::BaseController
 
   # GET /logs
   def index
-    log_scope = SensorLog.includes(:sensor).newest
+    log_scope = @logs.includes(:sensor).newest
+    if @current_user.supervisor?
+      log_scope = log_scope.joins(sensor: :zone)
+                           .where(zones: {user_id: @current_user.id})
+    end
+
     @pagy, logs = pagy(log_scope, items: params[:limit] || DEFAULT_LOGS_LIMIT)
     render_paginated_response(logs, LogSerializer, t(".success"))
   end

@@ -2,18 +2,17 @@
 
 class Api::V1::CamerasController < Api::V1::BaseController
   before_action :authenticate_request!
-  before_action :authorize_admin!
-  before_action :set_camera,
-                only: %i(show update destroy capture_and_upload_snapshot)
+  load_and_authorize_resource class: "Camera", except: [:stats]
 
   # GET /api/v1/cameras
   def index
-    @pagy, cameras = pagy(Camera.includes(:zone).newest)
+    @pagy, cameras = pagy(@cameras.includes(:zone).newest)
     render_paginated_response(cameras, CameraSerializer, t(".success"))
   end
 
   # GET /api/v1/cameras/stats
   def stats
+    authorize! :stats, Camera
     total_count = Camera.count
     render_success({total: total_count}, :ok)
   end
@@ -25,17 +24,13 @@ class Api::V1::CamerasController < Api::V1::BaseController
 
   # POST /api/v1/cameras
   def create
-    camera = Camera.new(camera_params)
-    if camera.save
+    if @camera.save
       render_success(
-        {
-          message: t(".success"),
-          camera: CameraSerializer.new(camera)
-        },
+        {message: t(".success"), camera: CameraSerializer.new(@camera)},
         :created
       )
     else
-      render_error(camera.errors.full_messages, :unprocessable_entity)
+      render_error(@camera.errors.full_messages, :unprocessable_entity)
     end
   end
 
@@ -43,10 +38,7 @@ class Api::V1::CamerasController < Api::V1::BaseController
   def update
     if @camera.update(camera_params)
       render_success(
-        {
-          message: t(".success"),
-          camera: CameraSerializer.new(@camera)
-        },
+        {message: t(".success"), camera: CameraSerializer.new(@camera)},
         :ok
       )
     else
@@ -65,6 +57,8 @@ class Api::V1::CamerasController < Api::V1::BaseController
 
   # POST /api/v1/cameras/:id/capture_and_upload_snapshot
   def capture_and_upload_snapshot
+    authorize! :capture_and_upload_snapshot, @camera
+
     result = Cameras::SnapshotService.new(camera: @camera).call
 
     if result.success?
@@ -83,15 +77,6 @@ class Api::V1::CamerasController < Api::V1::BaseController
   end
 
   private
-
-  def set_camera
-    @camera = Camera.find_by(id: params[:id])
-    return if @camera
-
-    raise ActiveRecord::RecordNotFound,
-          t("api.v1.cameras.not_found",
-            id: params[:id])
-  end
 
   def camera_params
     params.require(:camera).permit(Camera::CAMERA_PERMIT)

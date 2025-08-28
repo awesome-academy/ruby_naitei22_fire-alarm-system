@@ -27,6 +27,7 @@ gem "stimulus-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "active_model_serializers"
 gem "activerecord-import"
+gem "cancancan"
 gem "config"
 gem "devise"
 gem "devise-jwt"

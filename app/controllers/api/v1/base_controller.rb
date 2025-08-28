@@ -43,14 +43,6 @@ class Api::V1::BaseController < ApplicationController
           t("api.v1.base_controller.errors.invalid_token", error: e.message)
   end
 
-  def authorize_admin!
-    authenticate_request! unless @current_user
-    return if @current_user.admin?
-
-    raise NotAuthorizedError,
-          t("api.v1.base_controller.errors.admins_only")
-  end
-
   def set_locale
     header_locale = request.headers["Accept-Language"]&.scan(/^[a-z]{2}/)&.first
     I18n.locale = header_locale || I18n.default_locale

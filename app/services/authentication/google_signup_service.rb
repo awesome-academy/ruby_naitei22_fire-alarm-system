@@ -9,8 +9,12 @@ module Authentication
     def call
       return invalid_invitation_result unless valid_invitation?
 
-      ActiveRecord::Base.transaction do
-        create_user_and_account
+      begin
+        ActiveRecord::Base.transaction do
+          create_user_and_account
+        end
+      rescue ActiveRecord::ActiveRecordError => e
+        Result.new(success?: false, errors: e.message)
       end
     end
 
@@ -42,7 +46,7 @@ module Authentication
       )
 
       if user.save
-        create_oauth_account(user)
+        attach_oauth_account(user)
         @invitation.update!(used: true, user:)
         Result.new(success?: true, user:)
       else
@@ -50,13 +54,12 @@ module Authentication
       end
     end
 
-    def create_oauth_account user
+    def attach_oauth_account user
       account = OauthAccount.find_or_initialize_by(
         provider: @auth.provider,
         uid: @auth.uid
       )
-      account.user = user
-      account.save!
+      account.update!(user:)
     end
   end
 end

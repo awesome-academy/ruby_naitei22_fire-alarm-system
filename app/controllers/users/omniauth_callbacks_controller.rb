@@ -15,7 +15,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     end
 
     set_auth_cookies(result.tokens)
-    render_success(account, result.tokens)
+    render_success(result.user, result.tokens)
   end
 
   private
@@ -33,30 +33,35 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   def generate_tokens account, auth
     if account.user.present?
-      tokens = Authentication::TokenGeneratorService.new(account.user).call
-      OpenStruct.new(success?: true, tokens:, user: account.user)
+      generate_for_existing_user(account)
     else
-      signup_result = Authentication::GoogleSignupService.new(auth:).call
-      return signup_result unless signup_result.success?
-
-      account.update!(user: signup_result.user)
-      tokens = Authentication::TokenGeneratorService
-               .new(signup_result.user)
-               .call
-      OpenStruct.new(success?: true, tokens:, user: signup_result.user)
+      generate_for_new_user(auth)
     end
   end
 
-  def render_success account, tokens
+  def generate_for_existing_user account
+    tokens = Authentication::TokenGeneratorService.new(account.user).call
+    OpenStruct.new(success?: true, tokens:, user: account.user)
+  end
+
+  def generate_for_new_user auth
+    signup_result = Authentication::GoogleSignupService.new(auth:).call
+    return signup_result unless signup_result.success?
+
+    tokens = Authentication::TokenGeneratorService.new(signup_result.user).call
+    OpenStruct.new(success?: true, tokens:, user: signup_result.user)
+  end
+
+  def render_success user, tokens
     render_popup_message({
                            success: true,
                            access_token: tokens[:access_token],
                            refresh_token: tokens[:refresh_token],
                            user: {
-                             id: account.user.id,
-                             email: account.user.email,
-                             name: account.user.name,
-                             role: account.user.role
+                             id: user.id,
+                             email: user.email,
+                             name: user.name,
+                             role: user.role
                            }
                          })
   end
