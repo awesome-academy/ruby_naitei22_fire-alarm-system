@@ -35,6 +35,17 @@ vi:
     ml_clients:
       timeout: "Dịch vụ AI bị quá thời gian chờ: %{message}"
       connection_error: "Lỗi kết nối đến dịch vụ AI: %{message}"
+    notifications:
+      telegram:
+        message_html: |
+          *🔥 CẢNH BÁO CHÁY KHẨN CẤP 🔥*
+
+          *Khu vực:* %{zone_name}
+          *Thiết bị:* %{owner_name} (%{owner_type})
+          *Thời gian:* %{timestamp}
+
+          *Nội dung:*
+          %{message}
   alert_mailer:
     new_alert_notification:
       subject: "🔥 [CẢNH BÁO] Đã phát hiện sự cố!"

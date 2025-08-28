@@ -35,6 +35,17 @@ en:
     ml_clients:
       timeout: "AI Service timed out: %{message}"
       connection_error: "AI Service connection error: %{message}"
+    notifications:
+      telegram:
+        message_html: |
+          *🔥 URGENT FIRE WARNING 🔥*
+
+          *Area:* %{zone_name}
+          *Device:* %{owner_name} (%{owner_type})
+          *Time:* %{timestamp}
+
+          *Details:*
+          %{message}
   alert_mailer:
     new_alert_notification:
       subject: "🔥 [WARNING] An incident has been detected!"

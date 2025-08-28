@@ -26,6 +26,7 @@ module Alerts
 
       if alert.save
         NotificationService.new(alert:).call
+        Notifications::TelegramService.new(alert:).call
         Result.new(success?: true, alert:)
       else
         Result.new(success?: false, errors: alert.errors.full_messages)
