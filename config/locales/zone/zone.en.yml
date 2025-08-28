@@ -9,6 +9,7 @@ en:
       failure: "Zone creation failed"
     errors:
       not_found: "Zone not found."
+      name_uniqueness: "should be unique for each supervisor"
     update:
       success: "Zone updated successfully"
       failure: "Zone update failed"

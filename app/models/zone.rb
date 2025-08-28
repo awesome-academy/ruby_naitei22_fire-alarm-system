@@ -3,6 +3,13 @@ class Zone < ApplicationRecord
   has_many :sensors, dependent: :destroy
   has_many :cameras, dependent: :destroy
   has_many :alerts, dependent: :destroy
+  validates :name,
+            presence: true,
+            uniqueness: {
+              scope: :user_id,
+              message: I18n.t("zones.errors.name_uniqueness")
+            }
+  validates :user, presence: true
   scope :with_location, (lambda do
     where.not(city: nil)
          .or(where.not(latitude: nil, longitude: nil))

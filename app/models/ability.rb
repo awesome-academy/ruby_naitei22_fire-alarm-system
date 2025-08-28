@@ -33,14 +33,15 @@ class Ability
 
   def define_zone_and_device_permissions user
     can :manage, Zone, user_id: user.id
-    can :manage, Camera, zone: {user_id: user.id}
-    can :manage, Sensor, zone: {user_id: user.id}
+    can [:create, :read, :update], Camera, zone: {user_id: user.id}
+    can :capture_and_upload_snapshot, Camera, zone: {user_id: user.id}
+    can [:create, :read, :update], Sensor, zone: {user_id: user.id}
   end
 
   def define_alert_and_log_permissions user
     can :read, Alert, zone: {user_id: user.id}
     can :update_status, Alert, zone: {user_id: user.id}
     can :read, SensorLog, sensor: {zone: {user_id: user.id}}
-    can [:chart, :stats], SensorLog
+    can :chart, SensorLog
   end
 end

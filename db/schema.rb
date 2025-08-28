@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_08_16_095443) do
+ActiveRecord::Schema[7.0].define(version: 2025_08_28_075929) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -150,6 +150,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_16_095443) do
     t.datetime "updated_at", null: false
     t.integer "sensors_count", default: 0
     t.integer "cameras_count", default: 0
+    t.index ["name", "user_id"], name: "index_zones_on_name_and_user_id", unique: true
     t.index ["user_id"], name: "index_zones_on_user_id"
   end
 
