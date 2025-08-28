@@ -33,7 +33,23 @@ module Notifications
     end
 
     def build_message
-      I18n.t("services.notifications.telegram.message_html", i18n_params)
+      zone_name = @alert.zone.name
+      owner_name = @alert.owner.name
+      owner_type = @alert.owner_type
+      timestamp = @alert.created_at
+                        .in_time_zone(TIMEZONE)
+                        .strftime(TIMESTAMP_FORMAT)
+
+      <<~MSG
+        *🔥 CẢNH BÁO CHÁY KHẨN CẤP 🔥*
+
+        *Khu vực:* #{zone_name}
+        *Thiết bị:* #{owner_name} (#{owner_type})
+        *Thời gian:* #{timestamp}
+
+        *Nội dung:*
+        #{@alert.message}
+      MSG
     end
 
     def i18n_params

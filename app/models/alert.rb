@@ -19,15 +19,17 @@ class Alert < ApplicationRecord
 
   scope :newest, ->{order(created_at: :desc)}
   scope :with_status, (lambda do |status|
-    where(status:) if status.present? && statuses.key?(status)
+    where(status: statuses[status] || -1) if status.present?
   end)
   scope :in_date_range, lambda {|start_date, end_date|
     return unless start_date.present? && end_date.present?
 
     begin
-      start_time = Time.zone.parse(start_date.to_s).beginning_of_day
-      end_time = Time.zone.parse(end_date.to_s).end_of_day
-      where(created_at: start_time..end_time)
+      start_time = Time.zone.parse(start_date.to_s)
+      end_time = Time.zone.parse(end_date.to_s)
+      return all unless start_time && end_time
+
+      where(created_at: start_time.beginning_of_day..end_time.end_of_day)
     rescue ArgumentError
       all
     end

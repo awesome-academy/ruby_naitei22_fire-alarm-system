@@ -9,6 +9,7 @@ vi:
       failure: "Tạo vùng thất bại"
     errors:
       not_found: "Không tìm thấy khu vực."
+      name_uniqueness: "phải là duy nhất cho mỗi giám sát"
     update:
       success: "Cập nhật vùng thành công"
       failure: "Cập nhật vùng thất bại"
