@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_08_21_042837) do
+ActiveRecord::Schema[7.0].define(version: 2025_08_25_095335) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -83,6 +83,16 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_21_042837) do
     t.index ["code"], name: "index_invitations_on_code", unique: true
     t.index ["email"], name: "index_invitations_on_email"
     t.index ["user_id"], name: "index_invitations_on_user_id"
+  end
+
+  create_table "oauth_accounts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "provider"
+    t.string "uid"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider", "uid"], name: "index_oauth_accounts_on_provider_and_uid", unique: true
+    t.index ["user_id"], name: "index_oauth_accounts_on_user_id"
   end
 
   create_table "sensor_logs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -159,6 +169,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_21_042837) do
   add_foreign_key "alerts", "zones"
   add_foreign_key "cameras", "zones"
   add_foreign_key "invitations", "users"
+  add_foreign_key "oauth_accounts", "users"
   add_foreign_key "sensor_logs", "sensors", on_delete: :cascade
   add_foreign_key "sensors", "zones"
   add_foreign_key "tokens", "users"

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class Api::V1::AuthenticationController < Api::V1::BaseController
-  ACCESS_TOKEN_EXPIRES_IN = 15.minutes
-  REFRESH_TOKEN_EXPIRES_IN = 7.days
+  include Authentication::CookieHelpers
+
   SIGNUP_PARAMS_PERMIT = %i(name email password phone invitation_code).freeze
 
   before_action :authenticate_request!, only: %i(profile update_role)
@@ -114,27 +114,6 @@ class Api::V1::AuthenticationController < Api::V1::BaseController
 
   def signup_params
     params.require(:auth)
-  end
-
-  def set_auth_cookies tokens
-    set_cookie(:accessToken, tokens[:access_token], ACCESS_TOKEN_EXPIRES_IN)
-    set_cookie(:refreshToken, tokens[:refresh_token], REFRESH_TOKEN_EXPIRES_IN)
-  end
-
-  def clear_auth_cookies
-    cookies.delete(:accessToken)
-    cookies.delete(:refreshToken)
-  end
-
-  def set_cookie key, value, expires_in
-    cookies[key] = {
-      value:,
-      expires: expires_in.from_now,
-      httponly: true,
-      secure: Rails.env.production?,
-      same_site: :lax,
-      path: "/"
-    }
   end
 
   def render_success data, status
