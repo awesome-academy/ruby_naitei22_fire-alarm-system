@@ -2,7 +2,7 @@
 
 class Api::V1::InvitationsController < Api::V1::BaseController
   before_action :authenticate_request!
-  before_action :authorize_admin!
+  load_and_authorize_resource only: %i(index create), class: "Invitation"
 
   # GET /api/v1/invitations
   def index

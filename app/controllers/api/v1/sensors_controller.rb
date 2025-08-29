@@ -1,37 +1,38 @@
 class Api::V1::SensorsController < Api::V1::BaseController
   before_action :authenticate_request!
-  before_action :load_sensor, only: [:show, :update, :destroy]
-  before_action :authorize_admin!, only: [:destroy]
+  load_and_authorize_resource class: "Sensor", except: [:stats, :bulk]
 
   # GET /api/sensors/stats
   def stats
+    authorize! :stats, Sensor
     stats = Sensors::SensorService.new.get_stats
     render json: stats
   end
 
   # POST /api/sensors
   def create
-    sensor = Sensor.new(sensor_params)
-    if sensor.save
+    @sensor.user ||= @current_user
+
+    if @sensor.save
       render_success(
-        {
-          message: t(".success"),
-          sensor: SensorSerializer.new(sensor)
-        },
-        :created
+        {message: t(".success"),
+         sensor: SensorSerializer.new(@sensor)}, :created
       )
     else
-      render_error(sensor.errors.full_messages, :unprocessable_entity)
+      render_error(@sensor.errors.full_messages, :unprocessable_entity)
     end
   end
 
   # POST /api/sensors/bulk
   def bulk
+    authorize! :bulk, Sensor
+
     permitted_sensors = params.require(:sensors).map do |sensor|
       sensor.permit(*Sensor::SENSOR_PERMITTED)
     end
 
-    result = Sensors::SensorService.new.bulk(permitted_sensors)
+    result = Sensors::SensorService.new.bulk(permitted_sensors,
+                                             current_user: @current_user)
 
     render json: {
       message: t(".success", count: result[:inserted]),
@@ -47,6 +48,11 @@ class Api::V1::SensorsController < Api::V1::BaseController
     sensor_scope = Sensors::SensorService.new.find_all(
       params.permit(Sensor::SENSOR_INDEX_PERMITTED)
     )
+    if @current_user.supervisor?
+      sensor_scope = sensor_scope.joins(:zone)
+                                 .where(zones: {user_id: @current_user.id})
+    end
+
     @pagy, sensors = pagy(sensor_scope,
                           items: params[:limit] || Settings.digits.digit_20)
     render_paginated_response(sensors, SensorSerializer, t(".success"))
@@ -61,11 +67,7 @@ class Api::V1::SensorsController < Api::V1::BaseController
   def update
     if @sensor.update(sensor_params)
       render_success(
-        {
-          message: t(".success"),
-          sensor: SensorSerializer.new(@sensor)
-        },
-        :ok
+        {message: t(".success"), sensor: SensorSerializer.new(@sensor)}, :ok
       )
     else
       render_error(@sensor.errors.full_messages, :unprocessable_entity)
@@ -77,22 +79,13 @@ class Api::V1::SensorsController < Api::V1::BaseController
     if @sensor.destroy
       render_success({message: t(".success"), sensor: @sensor}, :ok)
     else
-      render json: {errors: t(".failed")},
-             status: :unprocessable_entity
+      render_error([t(".failed")], :unprocessable_entity)
     end
   end
 
   private
 
-  def load_sensor
-    @sensor = Sensor.find_by(id: params[:id])
-    return if @sensor.present?
-
-    render json: {error: t("api.v1.sensors.sensor_not_found")},
-           status: :not_found
-  end
-
   def sensor_params
-    params.require(:sensor).except(:id).permit Sensor::SENSOR_PERMITTED
+    params.require(:sensor).except(:id).permit(Sensor::SENSOR_PERMITTED)
   end
 end
