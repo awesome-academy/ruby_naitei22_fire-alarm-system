@@ -2,22 +2,19 @@ class Api::V1::SensorsController < Api::V1::BaseController
   before_action :authenticate_request!
   before_action :load_sensor, only: [:show, :update, :destroy]
   before_action :authorize_admin!, only: [:destroy]
-
+  load_and_authorize_resource
   # GET /api/sensors/stats
   def stats
+    authorize! :stats, Sensor
     stats = Sensors::SensorService.new.get_stats
     render json: stats
   end
 
   # POST /api/sensors
   def create
-    sensor = Sensor.new(sensor_params)
-    if sensor.save
+    if @sensor.save
       render_success(
-        {
-          message: t(".success"),
-          sensor: SensorSerializer.new(sensor)
-        },
+        {message: t(".success"), sensor: SensorSerializer.new(@sensor)},
         :created
       )
     else
@@ -27,6 +24,7 @@ class Api::V1::SensorsController < Api::V1::BaseController
 
   # POST /api/sensors/bulk
   def bulk
+    authorize! :bulk, Sensor
     permitted_sensors = params.require(:sensors).map do |sensor|
       sensor.permit(*Sensor::SENSOR_PERMITTED)
     end
@@ -44,9 +42,7 @@ class Api::V1::SensorsController < Api::V1::BaseController
 
   # GET /api/sensors
   def index
-    sensor_scope = Sensors::SensorService.new.find_all(
-      params.permit(Sensor::SENSOR_INDEX_PERMITTED)
-    )
+    sensor_scope = @sensors.includes(:zone)
     @pagy, sensors = pagy(sensor_scope,
                           items: params[:limit] || Settings.digits.digit_20)
     render_paginated_response(sensors, SensorSerializer, t(".success"))
@@ -61,10 +57,7 @@ class Api::V1::SensorsController < Api::V1::BaseController
   def update
     if @sensor.update(sensor_params)
       render_success(
-        {
-          message: t(".success"),
-          sensor: SensorSerializer.new(@sensor)
-        },
+        {message: t(".success"), sensor: SensorSerializer.new(@sensor)},
         :ok
       )
     else
@@ -84,21 +77,7 @@ class Api::V1::SensorsController < Api::V1::BaseController
 
   private
 
-  def load_sensor
-    @sensor = Sensor.find_by(id: params[:id])
-    return if @sensor.present?
-
-    render json: {error: t(".sensor_not_found")}, status: :not_found
-  end
-
   def sensor_params
-    params.require(:sensor).except(:id).permit Sensor::SENSOR_PERMITTED
-  end
-
-  def authorize_admin!
-    return if current_user&.admin?
-
-    render json: {error: t(".forbidden")},
-           status: :forbidden
+    params.require(:sensor).permit(Sensor::SENSOR_PERMITTED)
   end
 end

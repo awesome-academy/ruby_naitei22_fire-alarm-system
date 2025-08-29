@@ -2,13 +2,12 @@
 
 class Api::V1::AlertsController < Api::V1::BaseController
   before_action :authenticate_request!
-  before_action :authorize_admin!, only: %i(index show create stats)
-  before_action :set_alert, only: %i(show update_status)
+  load_and_authorize_resource
   DEFAULT_PER_PAGE = 10
 
   # GET /api/v1/alerts
   def index
-    alerts_scope = Alert.includes(Alert::ALERTS_PRELOAD).newest
+    alerts_scope = @alerts.includes(Alert::ALERTS_PRELOAD).newest
     alerts_scope = alerts_scope.with_status(params[:status])
     alerts_scope = alerts_scope.in_date_range(params[:start_date],
                                               params[:end_date])
@@ -21,6 +20,7 @@ class Api::V1::AlertsController < Api::V1::BaseController
 
   # GET /api/v1/alerts/stats
   def stats
+    authorize! :stats, Alert
     render_success({pending: Alert.pending_count}, :ok)
   end
 
@@ -31,7 +31,6 @@ class Api::V1::AlertsController < Api::V1::BaseController
 
   # POST /api/v1/alerts
   def create
-    @alert = Alert.new(alert_params)
     if @alert.save
       Alerts::NotificationService.new(alert: @alert).call
       render_success(
@@ -45,6 +44,7 @@ class Api::V1::AlertsController < Api::V1::BaseController
 
   # PATCH /api/v1/alerts/:id/status
   def update_status
+    authorize! :update_status, @alert
     result = Alerts::StatusUpdaterService.new(
       alert: @alert,
       user: @current_user,
@@ -63,12 +63,7 @@ class Api::V1::AlertsController < Api::V1::BaseController
 
   private
 
-  def set_alert
-    @alert = Alert.find_by(id: params[:id])
-    raise ActiveRecord::RecordNotFound unless @alert
-  end
-
   def alert_params
-    params.require("alert").permit(Alert::ALERT_PERMIT)
+    params.require(:alert).permit(Alert::ALERT_PERMIT)
   end
 end

@@ -1,11 +1,10 @@
 class Api::V1::ZonesController < Api::V1::BaseController
-  PERMIT = %i(name description city latitude longitude).freeze
   before_action :authenticate_request!
-  before_action :set_zone, only: [:show, :update, :destroy]
-
+  load_and_authorize_resource
+  PERMIT = %i(name description city latitude longitude).freeze
   # GET /api/v1/zones
   def index
-    zones_scope = Zone.filter_and_sort(params)
+    zones_scope = @zones.filter_and_sort(params)
 
     @pagy, zones = pagy(zones_scope)
     render_paginated_response(zones, ZoneSerializer, t(".success"))
@@ -21,7 +20,7 @@ class Api::V1::ZonesController < Api::V1::BaseController
 
   # POST /api/v1/zones
   def create
-    @zone = current_user.zones.new(zone_params)
+    @zone.user = current_user
     if @zone.save
       render_success({
                        message: t(".success"),
@@ -55,14 +54,7 @@ class Api::V1::ZonesController < Api::V1::BaseController
 
   private
 
-  def set_zone
-    @zone = Zone.find_by(id: params[:id])
-    return if @zone
-
-    render_error(t("zones.errors.not_found"), :not_found)
-  end
-
   def zone_params
-    params.require(:zone).except(:id).permit(*PERMIT)
+    params.require(:zone).permit(*PERMIT)
   end
 end

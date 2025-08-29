@@ -6,11 +6,11 @@ class Api::V1::AuthenticationController < Api::V1::BaseController
   SIGNUP_PARAMS_PERMIT = %i(name email password phone invitation_code).freeze
 
   before_action :authenticate_request!, only: %i(profile update_role)
-  before_action :authorize_admin!, only: %i(update_role)
   before_action :set_user_to_update, only: %i(update_role)
   skip_before_action :authenticate_request!,
                      only: %i(forgot_password reset_password), raise: false
 
+  load_and_authorize_resource only: [:update_role], class: "User"
   # POST /api/v1/auth/signup
   def signup
     result = Authentication::RegistrationService.new(params: signup_params).call
@@ -51,11 +51,13 @@ class Api::V1::AuthenticationController < Api::V1::BaseController
 
   # GET /api/v1/auth/profile
   def profile
+    authorize! :profile, @current_user
     render json: @current_user, serializer: UserSerializer, status: :ok
   end
 
   # PATCH /api/v1/auth/role
   def update_role
+    authorize! :update_role, @user_to_update
     result = Authentication::RoleUpdaterService.new(
       user_to_update: @user_to_update,
       current_user: @current_user,
