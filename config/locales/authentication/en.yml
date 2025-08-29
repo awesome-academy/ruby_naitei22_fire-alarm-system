@@ -60,3 +60,10 @@ en:
           invalid_token: "Invalid token: %{error}"
           auth_failed: "Authentication failed."
           admins_only: "This action is restricted to administrators."
+  time:
+    formats:
+      long: "%H:%M %d/%m/%Y"
+  google_callback:
+    auth_data_not_found: "Google authentication data not found"
+    user_not_found: "Cannot create or find user from Google"
+    invitation_invalid: "Invitation code is invalid"

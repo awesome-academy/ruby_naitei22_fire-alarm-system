@@ -9,6 +9,10 @@ gem "rails", "~> 7.0.5"
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 
+gem "devise"
+gem "devise-jwt"
+gem "omniauth-google-oauth2"
+
 # Use mysql as the database for Active Record
 gem "mysql2", "~> 0.5"
 
@@ -33,6 +37,7 @@ gem "jsonapi-serializer"
 gem "jwt"
 gem "pagy"
 gem "paranoia", "~> 2.6"
+gem "webrick"
 # Use Redis adapter to run Action Cable in production
 gem "redis", "~> 4.0"
 
@@ -58,14 +63,20 @@ gem "httparty"
 gem "rack-cors"
 gem "sidekiq"
 gem "sidekiq-cron"
+gem "streamio-ffmpeg"
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html
   gem "debug", platforms: %i(mri mingw x64_mingw)
   gem "dotenv-rails", groups: [:development, :test]
+  gem "factory_bot_rails"
   gem "pry-byebug"
+  gem "rspec-rails", "~> 6.1"
   gem "rubocop", "~> 1.26", require: false
   gem "rubocop-checkstyle_formatter", require: false
   gem "rubocop-rails", "~> 2.14.0", require: false
+  gem "shoulda-matchers", "~> 5.3.0"
+  gem "simplecov", require: false
+  gem "simplecov-rcov", require: false
 end
 
 group :development do

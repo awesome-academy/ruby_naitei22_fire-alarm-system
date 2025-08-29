@@ -60,3 +60,10 @@ vi:
           invalid_token: "Token không hợp lệ: %{error}"
           auth_failed: "Xác thực thất bại."
           admins_only: "Hành động này chỉ dành cho quản trị viên."
+  time:
+    formats:
+      long: "%H:%M %d/%m/%Y"
+    google_callback:
+      auth_data_not_found: "Không tìm thấy dữ liệu xác thực Google"
+      user_not_found: "Không thể tạo hoặc tìm người dùng từ Google"
+      invitation_invalid: "Mã mời không hợp lệ"

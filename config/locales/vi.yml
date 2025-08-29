@@ -44,3 +44,5 @@ vi:
       snapshot_header: "Ảnh chụp từ camera"
       call_to_action: "Vui lòng đăng nhập vào hệ thống để xử lý."
       thank_you: "Cảm ơn bạn."
+  cancan:
+    access_denied: "Bạn không có quyền thực hiện hành động này"
