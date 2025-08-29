@@ -2,8 +2,9 @@ class Sensor < ApplicationRecord
   enum status: {active: 0, inactive: 1, error: 2}
 
   belongs_to :zone, counter_cache: true
+
   has_many :sensor_logs, dependent: :destroy
-  has_many :alerts, dependent: :nullify
+  has_many :alerts, dependent: :destroy
 
   # rubocop:disable Rails/HasManyOrHasOneDependent
   has_one :latest_log, ->{newest}, class_name: SensorLog.name

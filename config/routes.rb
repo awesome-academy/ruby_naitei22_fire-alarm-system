@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
   mount ActionCable.server => "/cable"
+  devise_for :users,
+          path: "",
+          controllers: { omniauth_callbacks: "users/omniauth_callbacks" },
+          skip: [:registrations, :sessions, :passwords]
   namespace :api do
     namespace :v1 do
       scope :auth, controller: :authentication do

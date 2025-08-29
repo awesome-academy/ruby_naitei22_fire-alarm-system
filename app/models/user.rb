@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  devise :omniauthable, omniauth_providers: [:google_oauth2]
   ROLES = %i(supervisor admin).freeze
   NAME_MAXIMUM = 50
   PASSWORD_MINIMUM = 6
@@ -11,6 +12,7 @@ class User < ApplicationRecord
   has_many :tokens, dependent: :destroy
   has_many :zones, dependent: :destroy
   has_many :invitations, dependent: :destroy
+  has_many :oauth_accounts, dependent: :destroy
 
   scope :newest, ->{order(created_at: :desc)}
 

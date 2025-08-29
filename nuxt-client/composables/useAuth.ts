@@ -1,5 +1,5 @@
 import { computed } from 'vue';
-import { useState } from '#app';
+import { useState, useRouter } from '#app';
 import { useApi } from './useApi';
 import type { User } from '~/types/api';
 
@@ -80,6 +80,50 @@ export const useAuth = () => {
         }
     };
 
+    const config = useRuntimeConfig()
+    const loginWithGoogle = async (): Promise<{ success: boolean; error?: string }> => {
+        return new Promise((resolve) => {
+            const width = 500;
+            const height = 600;
+            const left = window.screenX + (window.outerWidth - width) / 2;
+            const top = window.screenY + (window.outerHeight - height) / 2;
+
+            const popup = window.open(
+                '',
+                'GoogleLogin',
+                `width=${width},height=${height},left=${left},top=${top}`
+            );
+
+            if (!popup) return resolve({ success: false, error: 'Popup blocked' });
+
+
+            const listener = (event: MessageEvent) => {
+                if (event.origin !== 'http://localhost:3000') return;
+
+                const data = event.data;
+                if (data.success) {
+                    user.value = data.user;
+                    isInitialized.value = true;
+                    resolve({ success: true });
+                } else {
+                    resolve({ success: false, error: data.error });
+                }
+
+                window.removeEventListener('message', listener);
+                popup.close();
+            };
+
+            window.addEventListener('message', listener);
+
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `${config.public.apiBase.replace('/api/v1', '')}/auth/google_oauth2`;
+            form.target = 'GoogleLogin';
+            document.body.appendChild(form);
+            form.submit();
+        });
+    };
+
     return {
         user,
         isAuthenticated,
@@ -90,5 +134,6 @@ export const useAuth = () => {
         logout,
         fetchUser,
         initAuth,
+        loginWithGoogle,
     };
 };
